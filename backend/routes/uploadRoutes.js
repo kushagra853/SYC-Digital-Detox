@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { extractScreenTime } from "../ocr/index.js";
-import Upload from "../models/Upload.js";
+import Upload from "../model/Upload.js";
 import fs from "fs";
 
 const router = express.Router();

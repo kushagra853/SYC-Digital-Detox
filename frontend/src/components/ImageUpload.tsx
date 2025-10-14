@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 interface ImageUploadProps {
   user: any;
+  onUploadComplete: () => void;
 }
 
 export default function ImageUpload({ user }: ImageUploadProps) {

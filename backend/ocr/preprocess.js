@@ -1,8 +1,8 @@
-import Jimp from "jimp";
+import * as jimp from "jimp";
 
 export const preprocessImage = async (inputPath, outputPath = null) => {
   try {
-    const image = await Jimp.read(inputPath);
+    const image = await jimp.read(inputPath);
     await image.greyscale().contrast(1).normalize();
 
     const savePath = outputPath || inputPath;

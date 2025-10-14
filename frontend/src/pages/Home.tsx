@@ -16,9 +16,13 @@ import {
   MapPin,
   Trophy,
   Sparkles,
+  User,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -93,23 +97,6 @@ export default function Home() {
                   Get Started - It's Free
                 </Button>
               </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    document
-                      .getElementById("details")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="text-lg px-8 py-6 border-2 hover:border-green-600 hover:text-green-600"
-                >
-                  Learn More
-                </Button>
-              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -135,13 +122,6 @@ export default function Home() {
               text: "Online Event",
               subtext: "Join from anywhere",
               delay: 0.1,
-            },
-            {
-              icon: Users,
-              title: "Participants",
-              text: "~60 Expected",
-              subtext: "B.Tech, MCA, MBA students",
-              delay: 0.2,
             },
           ].map((item) => (
             <motion.div
@@ -243,25 +223,25 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                emoji: "投",
+                emoji: "",
                 title: "Screen Time Tracking",
                 desc: "Monitor your daily screen usage and upload your digital wellbeing reports",
                 delay: 0,
               },
               {
-                emoji: "嶋",
+                emoji: "",
                 title: "Awareness Reports",
                 desc: "Receive periodic insights and progress updates throughout the program",
                 delay: 0.1,
               },
               {
-                emoji: "庁",
+                emoji: "",
                 title: "Daily Tips & Challenges",
                 desc: "Get suggestions for offline activities like exercise, reading, and socializing",
                 delay: 0.2,
               },
               {
-                emoji: "醇",
+                emoji: "",
                 title: "Certification",
                 desc: "Earn a participation certificate upon completing the program",
                 delay: 0.3,
@@ -295,47 +275,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Requirements */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-16"
-          id="timeline"
-        >
-          <Card className="border-2 hover:border-green-300 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white to-green-50/30">
-            <CardHeader>
-              <CardTitle>Requirements</CardTitle>
-              <CardDescription>What you'll need to participate</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 text-gray-600">
-                {[
-                  "Stable internet connection",
-                  "Personal Gmail account",
-                  "Screen time tracking app (built-in or suggested)",
-                ].map((req, index) => (
-                  <motion.li
-                    key={req}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-green-50 transition-colors"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.5 }}
-                      className="w-3 h-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full"
-                    />
-                    {req}
-                  </motion.li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </motion.div>
-
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -363,8 +302,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl text-white mt-4">
               Ready to Transform Your Digital Life?
             </h2>
-            <p className="text-green-100 text-lg max-w-2xl mx-auto px-4">
-              Join 60+ students from ABESEC in this life-changing journey
+            <p className="text-green-100 text-lg max-w-2xl mx-auto px-4 pt-3 pb-5">
+              Register Now
             </p>
             <motion.div
               whileHover={{ scale: 1.1, y: -5 }}
@@ -375,6 +314,12 @@ export default function Home() {
                 className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
               >
                 Register Now - Free
+              </Button>
+              <Button
+                onClick={() => navigate("/dashboard")}
+                className="ml-4 bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
+              >
+                dashboard check
               </Button>
             </motion.div>
           </div>

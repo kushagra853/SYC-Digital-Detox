@@ -104,15 +104,7 @@ export default function Footer() {
                 <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-300">ABESEC, Ghaziabad</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Mail className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                <a
-                  href="mailto:sanjeevani@abesec.edu"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  sanjeevani@abesec.edu
-                </a>
-              </li>
+
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-300">+91 XXX XXX XXXX</span>
@@ -131,7 +123,7 @@ export default function Footer() {
             <div className="flex gap-3 mb-6">
               <motion.a
                 href="#"
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className="w-10 h-10 bg-white/10 hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors"
               >
@@ -139,7 +131,7 @@ export default function Footer() {
               </motion.a>
               <motion.a
                 href="#"
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className="w-10 h-10 bg-white/10 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
               >
@@ -147,7 +139,7 @@ export default function Footer() {
               </motion.a>
               <motion.a
                 href="#"
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className="w-10 h-10 bg-white/10 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors"
               >
@@ -168,15 +160,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 mt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-            <p>© {currentYear} Digital Detox Program. All rights reserved.</p>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Terms of Service
-              </a>
-            </div>
+            <p>Made with ❤️ by SYC Club</p>
           </div>
         </div>
       </div>

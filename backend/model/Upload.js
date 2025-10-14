@@ -1,3 +1,4 @@
+import e from "express";
 import mongoose from "mongoose";
 
 const uploadSchema = new mongoose.Schema(
@@ -27,4 +28,6 @@ const uploadSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Upload", uploadSchema);
+const Upload = mongoose.model("Upload", uploadSchema);
+
+export default Upload;

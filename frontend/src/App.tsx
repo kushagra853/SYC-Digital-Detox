@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Layout from "./layout/layout";
 import Home from "./pages/Home";
 import AuthForm from "./pages/Registration";
+import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -22,12 +23,6 @@ export default function App() {
     navigate("/");
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    sessionStorage.removeItem("currentUser");
-    navigate("/");
-  };
-
   return (
     <>
       <Routes>
@@ -36,9 +31,13 @@ export default function App() {
           <Route
             path="/register"
             element={
-              <AuthForm onLogin={handleLogin} onBack={() => navigate("/")} />
+              <AuthForm
+                onRegisterSuccess={handleLogin}
+                onBack={() => navigate("/")}
+              />
             }
           />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </>

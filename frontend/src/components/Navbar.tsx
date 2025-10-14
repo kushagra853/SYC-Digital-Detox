@@ -31,7 +31,7 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
             </div>
             <div>
               <div className="text-lg text-gray-900">Digital Detox</div>
-              <div className="text-xs text-gray-500">ABESEC Initiative</div>
+              <div className="text-xs text-gray-500">SYC Initiative</div>
             </div>
           </motion.div>
 
@@ -42,18 +42,7 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
             >
               About
             </a>
-            <a
-              href="#features"
-              className="text-gray-600 hover:text-green-600 transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#timeline"
-              className="text-gray-600 hover:text-green-600 transition-colors"
-            >
-              Timeline
-            </a>
+
             {showGetStarted && (
               <motion.div
                 whileHover={{ scale: 1.05 }}
