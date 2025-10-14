@@ -41,6 +41,7 @@ export default function App() {
             element={
               <AuthForm
                 onRegisterSuccess={handleLogin}
+                onLoginSuccess={handleLogin}
                 onBack={() => navigate("/")}
               />
             }

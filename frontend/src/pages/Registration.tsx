@@ -1,22 +1,5 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Mail,
@@ -26,70 +9,89 @@ import {
   Sparkles,
   Lock,
   Loader2,
+  LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
-import api from "../api";
+import api, { loginUser } from "../api";
+import { Button } from "../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import ScrollToTopOnMount from "../components/ScrollToTop";
 
-interface RegistrationFormProps {
+interface RegistrationPageProps {
   onRegisterSuccess: (userData: any) => void;
+  onLoginSuccess: (userData: any) => void;
   onBack: () => void;
 }
 
-export default function RegistrationForm({
+function AuthToggle({
+  isLogin,
+  onToggle,
+}: {
+  isLogin: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex justify-center mb-6">
+      <div className="flex space-x-1 rounded-full bg-slate-100 p-1">
+        <button
+          type="button"
+          onClick={() => {
+            if (isLogin) onToggle();
+          }}
+          className={`relative rounded-full px-5 py-1.5 text-sm font-medium transition focus:outline-none ${
+            isLogin ? "text-slate-600" : "text-white"
+          }`}
+        >
+          <span className="relative z-10">Register</span>
+          {!isLogin && (
+            <motion.div
+              layoutId="active-pill"
+              className="absolute inset-0 rounded-full bg-green-600"
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            />
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (!isLogin) onToggle();
+          }}
+          className={`relative rounded-full px-5 py-1.5 text-sm font-medium transition focus:outline-none ${
+            isLogin ? "text-white" : "text-slate-600"
+          }`}
+        >
+          <span className="relative z-10">Login</span>
+          {isLogin && (
+            <motion.div
+              layoutId="active-pill"
+              className="absolute inset-0 rounded-full bg-green-600"
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function RegistrationPage({
   onRegisterSuccess,
+  onLoginSuccess,
   onBack,
-}: RegistrationFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    admNo: "",
-    year: "",
-    whatsappNumber: "",
-    phoneType: "",
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.admNo ||
-      !formData.year ||
-      !formData.whatsappNumber ||
-      !formData.phoneType
-    ) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await api.post("/auth/signup", {
-        ...formData,
-        year: parseInt(formData.year),
-      });
-
-      toast.success(response.data.message || "Registration successful!");
-      onRegisterSuccess(response.data.user);
-    } catch (error: any) {
-      if (error.response) {
-        toast.error(error.response.data.message || "Registration failed.");
-      } else {
-        toast.error(
-          "An unexpected error occurred. Please check your connection."
-        );
-      }
-      console.error("Registration failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+}: RegistrationPageProps) {
+  const [isLogin, setIsLogin] = useState(false);
+  const handleToggle = () => setIsLogin((prev) => !prev);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      <ScrollToTopOnMount />
       <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="absolute inset-0">
           <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 left-10 animate-pulse" />
@@ -120,7 +122,7 @@ export default function RegistrationForm({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-6xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent pb-4"
+              className="text-6xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent pb-4"
             >
               Digital Detox
             </motion.h2>
@@ -164,207 +166,434 @@ export default function RegistrationForm({
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          whileHover={{ y: -5 }}
           className="w-full"
         >
-          {/* Mobile Back Button */}
-          <div className="md:hidden mb-4">
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="hover:bg-white/50 backdrop-blur-sm"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </div>
-          <Card className="border-2 border-green-200 shadow-2xl bg-white/90 backdrop-blur-md hover:shadow-3xl transition-all duration-300">
-            <CardHeader className="space-y-2 pb-6">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
-                className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg"
-              >
-                <Lock className="w-8 h-8 text-white" />
-              </motion.div>
-              <CardTitle className="text-center text-3xl">
-                Create Account
-              </CardTitle>
-              <CardDescription className="text-center text-base">
-                Join the Digital Detox program today
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="name" className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-green-600" />
-                    Full Name
-                  </Label>
-                  <Input
-                    id="name"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                    className="border-2 focus:border-green-400 transition-colors"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-green-600" />
-                    Email Address
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your.email@gmail.com"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                    className="border-2 focus:border-green-400 transition-colors"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="admNo" className="flex items-center gap-2">
-                    <IdCard className="w-4 h-4 text-green-600" />
-                    Admission Number
-                  </Label>
-                  <Input
-                    id="admNo"
-                    placeholder="Enter your admission number"
-                    value={formData.admNo}
-                    onChange={(e) =>
-                      setFormData({ ...formData, admNo: e.target.value })
-                    }
-                    required
-                    className="border-2 focus:border-green-400 transition-colors"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="admNo" className="flex items-center gap-2">
-                    <IdCard className="w-4 h-4 text-green-600" />
-                    WhatsApp Number
-                  </Label>
-                  <Input
-                    id="whatsappNumber"
-                    placeholder="Enter your WhatsApp number"
-                    value={formData.whatsappNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        whatsappNumber: e.target.value,
-                      })
-                    }
-                    required
-                    className="border-2 focus:border-green-400 transition-colors"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="space-y-2"
-                >
-                  <Label
-                    htmlFor="phoneType"
-                    className="flex items-center gap-2"
-                  >
-                    <IdCard className="w-4 h-4 text-green-600" />
-                    Phone Type
-                  </Label>
-                  <Input
-                    id="phoneType"
-                    placeholder="Enter your phone type (samsumg, iphone, etc."
-                    value={formData.phoneType}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phoneType: e.target.value })
-                    }
-                    required
-                    className="border-2 focus:border-green-400 transition-colors"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="year" className="flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-green-600" />
-                    Year & Program
-                  </Label>
-                  <Select
-                    value={formData.year}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, year: value })
-                    }
-                    required
-                  >
-                    <SelectTrigger className="border-2 focus:border-green-400 transition-colors">
-                      <SelectValue placeholder="Select your year & program" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">B.Tech - 1st Year</SelectItem>
-                      <SelectItem value="2">B.Tech - 2nd Year</SelectItem>
-                      <SelectItem value="3">B.Tech - 3rd Year</SelectItem>
-                      <SelectItem value="11">MCA - 1st Year</SelectItem>
-                      <SelectItem value="12">MCA - 2nd Year</SelectItem>
-                      <SelectItem value="21">MBA - 1st Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                >
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all text-lg py-6"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    ) : null}
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </motion.div>
-              </form>
-            </CardContent>
-          </Card>
+          {isLogin ? (
+            <LoginForm
+              onLoginSuccess={onLoginSuccess}
+              onBack={onBack}
+              onToggleForm={handleToggle}
+              isLogin={isLogin}
+            />
+          ) : (
+            <RegistrationForm
+              onRegisterSuccess={onRegisterSuccess}
+              onBack={onBack}
+              onToggleForm={handleToggle}
+              isLogin={isLogin}
+            />
+          )}
         </motion.div>
       </div>
     </div>
+  );
+}
+
+interface RegisterFormProps {
+  onRegisterSuccess: (userData: any) => void;
+  onBack: () => void;
+  onToggleForm: () => void;
+  isLogin: boolean;
+}
+
+function RegistrationForm({
+  onRegisterSuccess,
+  onBack,
+  onToggleForm,
+  isLogin,
+}: RegisterFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    admNo: "",
+    year: "",
+    whatsappNumber: "",
+    phoneType: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (Object.values(formData).some((val) => val === "")) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await api.post("/auth/signup", {
+        ...formData,
+        year: parseInt(formData.year),
+      });
+      toast.success(response.data.message || "Registration successful!");
+      onRegisterSuccess(response.data.user);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+          "An unexpected error occurred. Please try again."
+      );
+      console.error("Registration failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="md:hidden mb-4">
+        <Button variant="ghost" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+      </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-8">
+          <AuthToggle isLogin={isLogin} onToggle={onToggleForm} />
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
+              <User className="w-7 h-7 text-green-700" />
+            </div>
+            <h1 className="text-2xl font-semibold text-slate-800 mb-1">
+              Create an Account
+            </h1>
+            <p className="text-sm text-slate-500">
+              Join the Digital Detox program today
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Enter your full name"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                placeholder="your.email@example.com"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="admNo"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Admission Number
+              </label>
+              <input
+                id="admNo"
+                type="text"
+                value={formData.admNo}
+                onChange={(e) =>
+                  setFormData({ ...formData, admNo: e.target.value })
+                }
+                placeholder="Enter your admission number"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-slate-700 block"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="Enter your password"
+                  required
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium text-slate-700 block"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Confirm your password"
+                  required
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="whatsappNumber"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                WhatsApp Number
+              </label>
+              <input
+                id="whatsappNumber"
+                type="tel"
+                value={formData.whatsappNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, whatsappNumber: e.target.value })
+                }
+                placeholder="Enter your WhatsApp number"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="phoneType"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Phone Type
+              </label>
+              <input
+                id="phoneType"
+                type="text"
+                value={formData.phoneType}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    phoneType: e.target.value,
+                  })
+                }
+                placeholder="e.g., Samsung, iPhone, etc."
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="year"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Year & Program
+              </label>
+              <Select
+                value={formData.year}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, year: value })
+                }
+                required
+                disabled={isLoading}
+              >
+                <SelectTrigger className="w-full px-4 py-2.5 h-auto bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                  <SelectValue placeholder="Select your year & program" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">B.Tech - 1st Year</SelectItem>
+                  <SelectItem value="2">B.Tech - 2nd Year</SelectItem>
+                  <SelectItem value="3">B.Tech - 3rd Year</SelectItem>
+                  <SelectItem value="11">MCA - 1st Year</SelectItem>
+                  <SelectItem value="12">MCA - 2nd Year</SelectItem>
+                  <SelectItem value="21">MBA - 1st Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    Create Account
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
+
+interface LoginFormProps {
+  onLoginSuccess: (userData: any) => void;
+  onBack: () => void;
+  onToggleForm: () => void;
+  isLogin: boolean;
+}
+
+function LoginForm({
+  onLoginSuccess,
+  onBack,
+  onToggleForm,
+  isLogin,
+}: LoginFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({ admNo: "", password: "" });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.admNo || !formData.password) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await loginUser(formData);
+      toast.success(response.message || "Login successful!");
+      onLoginSuccess(response.user);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+          "An unexpected error occurred. Please try again."
+      );
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="md:hidden mb-4">
+        <Button variant="ghost" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+      </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-8">
+          <AuthToggle isLogin={isLogin} onToggle={onToggleForm} />
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
+              <LogIn className="w-7 h-7 text-green-700" />
+            </div>
+            <h1 className="text-2xl font-semibold text-slate-800 mb-1">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-slate-500">
+              Sign in to continue your Digital Detox
+            </p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label
+                htmlFor="admNo"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Admission Number
+              </label>
+              <input
+                id="admNo"
+                type="text"
+                value={formData.admNo}
+                onChange={(e) =>
+                  setFormData({ ...formData, admNo: e.target.value })
+                }
+                placeholder="Enter your admission number"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-slate-700 block"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                placeholder="Enter your password"
+                required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    Sign In
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }

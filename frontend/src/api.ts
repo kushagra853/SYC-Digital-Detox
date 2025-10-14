@@ -53,4 +53,9 @@ export const getWeeklyStandings = async () => {
   return response.data;
 };
 
+export const loginUser = async (credentials: any) => {
+  const response = await api.post("/auth/login", credentials);
+  return response.data;
+};
+
 export default api;

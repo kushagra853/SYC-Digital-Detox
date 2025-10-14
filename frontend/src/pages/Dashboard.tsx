@@ -28,6 +28,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import ScrollToTopOnMount from "../components/ScrollToTop";
 
 interface DashboardProps {
   user: any;
@@ -149,6 +150,7 @@ export default function Dashboard({ user }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
+      <ScrollToTopOnMount />
       <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
