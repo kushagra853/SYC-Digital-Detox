@@ -25,7 +25,16 @@ interface Upload {
 interface User {
   id: string;
   name: string;
+  email: string;
+  admNo: string;
+  year: number;
+  whatsappNumber: string;
+  phoneType: string;
   uploads: Upload[];
+}
+
+interface DashboardProps {
+  user?: any;
 }
 
 type StatCardProps = {
@@ -122,41 +131,75 @@ function ScreenTimeChart({ uploads }: { uploads: Upload[] }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ user }: DashboardProps) {
   // 2. Add types to your useState hooks
-  const [user, setUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [uploads, setUploads] = useState<Upload[]>([]);
 
   const refreshDashboardData = () => {
     // Cast the parsed object to ensure type safety
-    const currentUser = JSON.parse(
+    const storedUser = JSON.parse(
       localStorage.getItem("digitalDetoxUser") || "{}"
     ) as User;
-    if (currentUser && currentUser.uploads) {
-      setUploads(currentUser.uploads);
+    if (storedUser && storedUser.uploads) {
+      setUploads(storedUser.uploads);
     }
   };
 
   useEffect(() => {
-    let currentUser = JSON.parse(
-      localStorage.getItem("digitalDetoxUser") ?? "null"
-    ) as User | null;
+    // If user is passed from App (logged in), use that user data
+    if (user) {
+      // Check if we have extended user data in localStorage
+      const storedUser = JSON.parse(
+        localStorage.getItem("digitalDetoxUser") || "{}"
+      ) as User;
+      
+      // If we don't have extended user data or it's a different user, initialize
+      if (!storedUser.id || storedUser.id !== user.id) {
+        const extendedUser: User = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          admNo: user.admNo,
+          year: user.year,
+          whatsappNumber: user.whatsappNumber,
+          phoneType: user.phoneType,
+          uploads: [],
+        };
+        localStorage.setItem("digitalDetoxUser", JSON.stringify(extendedUser));
+        setCurrentUser(extendedUser);
+        setUploads([]);
+      } else {
+        setCurrentUser(storedUser);
+        setUploads(storedUser.uploads || []);
+      }
+    } else {
+      // No user passed from App, check localStorage
+      let storedUser = JSON.parse(
+        localStorage.getItem("digitalDetoxUser") ?? "null"
+      ) as User | null;
 
-    if (!currentUser) {
-      const defaultUser: User = {
-        id: "default-user-1",
-        name: "User",
-        uploads: [],
-      };
-      const allUsers = [defaultUser];
-      localStorage.setItem("digitalDetoxUsers", JSON.stringify(allUsers));
-      localStorage.setItem("digitalDetoxUser", JSON.stringify(defaultUser));
-      currentUser = defaultUser;
+      if (!storedUser) {
+        const defaultUser: User = {
+          id: "default-user-1",
+          name: "Guest User",
+          email: "",
+          admNo: "",
+          year: 0,
+          whatsappNumber: "",
+          phoneType: "",
+          uploads: [],
+        };
+        const allUsers = [defaultUser];
+        localStorage.setItem("digitalDetoxUsers", JSON.stringify(allUsers));
+        localStorage.setItem("digitalDetoxUser", JSON.stringify(defaultUser));
+        storedUser = defaultUser;
+      }
+
+      setCurrentUser(storedUser);
+      setUploads(storedUser?.uploads || []);
     }
-
-    setUser(currentUser);
-    setUploads(currentUser?.uploads || []);
-  }, []);
+  }, [user]);
 
   const stats = useMemo(() => {
     if (uploads.length === 0) {
@@ -175,7 +218,7 @@ export default function Dashboard() {
     };
   }, [uploads]);
 
-  if (!user) {
+  if (!currentUser) {
     return <div>Loading...</div>;
   }
 
@@ -191,7 +234,7 @@ export default function Dashboard() {
             Digital Wellbeing Dashboard
           </h1>
           <p className="text-gray-600">
-            Welcome back, {user.name}! Here's your progress overview.
+            Welcome back, {currentUser.name}! Here's your progress overview.
           </p>
         </motion.div>
 
@@ -235,7 +278,7 @@ export default function Dashboard() {
           </div>
 
           <div className="lg:col-span-1">
-            <ImageUpload user={user} onUploadComplete={refreshDashboardData} />
+            <ImageUpload user={currentUser} onUploadComplete={refreshDashboardData} />
           </div>
         </div>
       </div>

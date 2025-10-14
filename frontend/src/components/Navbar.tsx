@@ -1,14 +1,16 @@
 import { motion } from "motion/react";
-import { Heart, Menu, X } from "lucide-react";
+import { Heart, Menu, X, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   showGetStarted?: boolean;
+  user?: any;
+  onLogout?: () => void;
 }
 
-export default function Navbar({ showGetStarted = true }: NavbarProps) {
+export default function Navbar({ showGetStarted = true, user, onLogout }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -25,6 +27,7 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
             className="flex items-center gap-2 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/")}
           >
             <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
               <Heart className="w-6 h-6 text-white" />
@@ -43,7 +46,23 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
               About
             </a>
 
-            {showGetStarted && (
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-gray-700 font-medium">{user.name}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={onLogout}
+                  className="border-green-600 text-green-600 hover:bg-green-50"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : showGetStarted ? (
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -55,7 +74,7 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
                   Get Started
                 </Button>
               </motion.div>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Menu Button */}
@@ -100,16 +119,39 @@ export default function Navbar({ showGetStarted = true }: NavbarProps) {
             >
               Timeline
             </a>
-            {showGetStarted && (
+            {user ? (
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-700 font-medium">{user.name}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onLogout?.();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="border-green-600 text-green-600 hover:bg-green-50"
+                  >
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            ) : showGetStarted ? (
               <Button
                 onClick={() => {
                   setMobileMenuOpen(false);
+                  navigate("/register");
                 }}
                 className="w-full bg-gradient-to-r from-green-600 to-emerald-600"
               >
                 Get Started
               </Button>
-            )}
+            ) : null}
           </motion.div>
         )}
       </div>

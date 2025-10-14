@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   Card,
@@ -18,7 +18,7 @@ interface ImageUploadProps {
   onUploadComplete: () => void;
 }
 
-export default function ImageUpload({ user }: ImageUploadProps) {
+export default function ImageUpload({ user, onUploadComplete }: ImageUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadDate, setUploadDate] = useState(
@@ -26,11 +26,16 @@ export default function ImageUpload({ user }: ImageUploadProps) {
   );
   const [screenTime, setScreenTime] = useState("");
   const [uploads, setUploads] = useState<any[]>(() => {
-    const users = JSON.parse(localStorage.getItem("digitalDetoxUsers") || "[]");
-    const currentUser = users.find((u: any) => u.id === user.id);
-    return currentUser?.uploads || [];
+    const storedUser = JSON.parse(localStorage.getItem("digitalDetoxUser") || "{}");
+    return storedUser?.uploads || [];
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update uploads when user changes
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("digitalDetoxUser") || "{}");
+    setUploads(storedUser?.uploads || []);
+  }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,18 +85,18 @@ export default function ImageUpload({ user }: ImageUploadProps) {
     setUploads(updatedUploads);
 
     // Update localStorage
-    const users = JSON.parse(localStorage.getItem("digitalDetoxUsers") || "[]");
-    const userIndex = users.findIndex((u: any) => u.id === user.id);
-    if (userIndex !== -1) {
-      users[userIndex].uploads = updatedUploads;
-      localStorage.setItem("digitalDetoxUsers", JSON.stringify(users));
-      localStorage.setItem(
-        "digitalDetoxUser",
-        JSON.stringify(users[userIndex])
-      );
-    }
+    const storedUser = JSON.parse(localStorage.getItem("digitalDetoxUser") || "{}");
+    storedUser.uploads = updatedUploads;
+    localStorage.setItem("digitalDetoxUser", JSON.stringify(storedUser));
+
+    // Also update the currentUser in localStorage
+    localStorage.setItem("currentUser", JSON.stringify({
+      ...user,
+      uploads: updatedUploads
+    }));
 
     toast.success("Screen time report uploaded successfully!");
+    onUploadComplete();
 
     // Reset form
     setSelectedFile(null);
@@ -115,18 +120,18 @@ export default function ImageUpload({ user }: ImageUploadProps) {
     setUploads(updatedUploads);
 
     // Update localStorage
-    const users = JSON.parse(localStorage.getItem("digitalDetoxUsers") || "[]");
-    const userIndex = users.findIndex((u: any) => u.id === user.id);
-    if (userIndex !== -1) {
-      users[userIndex].uploads = updatedUploads;
-      localStorage.setItem("digitalDetoxUsers", JSON.stringify(users));
-      localStorage.setItem(
-        "digitalDetoxUser",
-        JSON.stringify(users[userIndex])
-      );
-    }
+    const storedUser = JSON.parse(localStorage.getItem("digitalDetoxUser") || "{}");
+    storedUser.uploads = updatedUploads;
+    localStorage.setItem("digitalDetoxUser", JSON.stringify(storedUser));
+
+    // Also update the currentUser in localStorage
+    localStorage.setItem("currentUser", JSON.stringify({
+      ...user,
+      uploads: updatedUploads
+    }));
 
     toast.success("Upload deleted successfully");
+    onUploadComplete();
   };
 
   return (

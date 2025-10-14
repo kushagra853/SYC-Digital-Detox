@@ -20,7 +20,11 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+interface HomeProps {
+  user?: any;
+}
+
+export default function Home({ user }: HomeProps) {
   const navigate = useNavigate();
 
   return (
@@ -86,17 +90,37 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="flex flex-wrap justify-center gap-4 pt-4"
             >
-              <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
+              {user ? (
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-center"
                 >
-                  Get Started - It's Free
-                </Button>
-              </motion.div>
+                  <p className="text-xl text-gray-700 mb-4">
+                    Welcome back, <span className="font-bold text-green-600">{user.name}</span>!
+                  </p>
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/dashboard")}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
+                  >
+                    Go to Dashboard
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    onClick={() => navigate("/register")}
+                    size="lg"
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
+                  >
+                    Get Started - It's Free
+                  </Button>
+                </motion.div>
+              )}
             </motion.div>
           </div>
         </div>
@@ -303,24 +327,29 @@ export default function Home() {
               Ready to Transform Your Digital Life?
             </h2>
             <p className="text-green-100 text-lg max-w-2xl mx-auto px-4 pt-3 pb-5">
-              Register Now
+              {user ? "Continue your journey" : "Register Now"}
             </p>
             <motion.div
               whileHover={{ scale: 1.1, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button
-                size="lg"
-                className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
-              >
-                Register Now - Free
-              </Button>
-              <Button
-                onClick={() => navigate("/dashboard")}
-                className="ml-4 bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
-              >
-                dashboard check
-              </Button>
+              {user ? (
+                <Button
+                  onClick={() => navigate("/dashboard")}
+                  size="lg"
+                  className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
+                >
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/register")}
+                  size="lg"
+                  className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
+                >
+                  Register Now - Free
+                </Button>
+              )}
             </motion.div>
           </div>
         </motion.div>

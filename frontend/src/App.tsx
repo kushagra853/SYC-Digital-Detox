@@ -4,6 +4,8 @@ import Layout from "./layout/layout";
 import Home from "./pages/Home";
 import AuthForm from "./pages/Registration";
 import Dashboard from "./pages/Dashboard";
+import AdminLogin from "./admin/AdminLogin";
+import AdminDashboard from "./admin/AdminDashboard";
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -11,7 +13,7 @@ export default function App() {
 
   // Check for existing user session on mount
   useEffect(() => {
-    const savedUser = sessionStorage.getItem("currentUser");
+    const savedUser = localStorage.getItem("currentUser");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -19,15 +21,21 @@ export default function App() {
 
   const handleLogin = (userData: any) => {
     setUser(userData);
-    sessionStorage.setItem("currentUser", JSON.stringify(userData));
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+    navigate("/");
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("currentUser");
     navigate("/");
   };
 
   return (
     <>
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+        <Route element={<Layout user={user} onLogout={handleLogout} />}>
+          <Route path="/" element={<Home user={user} />} />
           <Route
             path="/register"
             element={
@@ -37,8 +45,11 @@ export default function App() {
               />
             }
           />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard user={user} />} />
         </Route>
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </>
   );
