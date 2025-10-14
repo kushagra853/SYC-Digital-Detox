@@ -1,0 +1,185 @@
+import { motion } from "motion/react";
+import {
+  Heart,
+  Mail,
+  MapPin,
+  Phone,
+  Instagram,
+  Linkedin,
+  Twitter,
+} from "lucide-react";
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-gradient-to-br from-gray-900 via-green-900 to-gray-900 text-white relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-96 h-96 bg-green-600/10 rounded-full blur-3xl -top-48 -left-48 animate-pulse" />
+        <div
+          className="absolute w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl -bottom-48 -right-48 animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
+          {/* Brand Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <div className="text-lg">Digital Detox</div>
+                <div className="text-xs text-green-300">ABESEC Initiative</div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-300">
+              Empowering students to build healthier digital habits and reclaim
+              their lives through mindful technology use.
+            </p>
+          </motion.div>
+
+          {/* Quick Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <h3 className="text-green-300 mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="#about"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  About Program
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#features"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Features
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#timeline"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Timeline
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  FAQs
+                </a>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h3 className="text-green-300 mb-4">Contact</h3>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-300">ABESEC, Ghaziabad</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Mail className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                <a
+                  href="mailto:sanjeevani@abesec.edu"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  sanjeevani@abesec.edu
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-300">+91 XXX XXX XXXX</span>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* Social & Organizers */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <h3 className="text-green-300 mb-4">Follow Us</h3>
+            <div className="flex gap-3 mb-6">
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 bg-white/10 hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
+              </motion.a>
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 bg-white/10 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+              >
+                <Linkedin className="w-5 h-5" />
+              </motion.a>
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 bg-white/10 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors"
+              >
+                <Twitter className="w-5 h-5" />
+              </motion.a>
+            </div>
+            <div className="text-sm text-gray-300">
+              <p className="text-green-300 mb-2">Organized by:</p>
+              <p>Sanjeevani Club</p>
+              <p>Yoga Club</p>
+              <p className="text-xs text-gray-400 mt-1">
+                (The Fitness Club of ABESEC)
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-white/10 pt-6 mt-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
+            <p>© {currentYear} Digital Detox Program. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-white transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Terms of Service
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
