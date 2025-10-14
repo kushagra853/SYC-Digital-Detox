@@ -1,12 +1,12 @@
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Heart, Menu, X, User } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   showGetStarted?: boolean;
-  user?: any;
+  user?: { name: string; [key: string]: any }; // Assuming user has a name property
   onLogout?: () => void;
 }
 
@@ -16,7 +16,32 @@ export default function Navbar({
   onLogout,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // State to manage the visibility of the user dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Ref to the dropdown container for detecting outside clicks
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Effect to close the dropdown when clicking outside of it
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+    // Add event listener when the dropdown is open
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <motion.nav
@@ -43,28 +68,48 @@ export default function Navbar({
           </motion.div>
 
           <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#about"
-              className="text-gray-600 hover:text-green-600 transition-colors"
-            >
-              About
-            </a>
-
             {user ? (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
+              // The container for the user info and dropdown
+              <div className="relative" ref={dropdownRef}>
+                {/* This button now toggles the dropdown */}
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-gray-700 font-medium">{user.name}</span>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={onLogout}
-                  className="border-green-600 text-green-600 hover:bg-green-50"
-                >
-                  Logout
-                </Button>
+                </button>
+
+                {/* The Dropdown Menu */}
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 border border-gray-100 py-1"
+                  >
+                    <button
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setIsDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={() => {
+                        onLogout?.();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600"
+                    >
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
               </div>
             ) : showGetStarted ? (
               <motion.div
@@ -102,27 +147,20 @@ export default function Navbar({
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden py-4 space-y-4"
           >
-            <a
-              href="#about"
-              className="block text-gray-600 hover:text-green-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </a>
-            <a
-              href="#features"
-              className="block text-gray-600 hover:text-green-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Features
-            </a>
-            <a
-              href="#timeline"
-              className="block text-gray-600 hover:text-green-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Timeline
-            </a>
+            {/* Added Dashboard link for mobile view when user is logged in */}
+            {user && (
+              <a
+                href="/dashboard"
+                className="block text-gray-600 hover:text-green-600 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/dashboard");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                Dashboard
+              </a>
+            )}
             {user ? (
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">

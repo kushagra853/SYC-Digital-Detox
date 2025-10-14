@@ -11,12 +11,10 @@ import {
   Smartphone,
   Brain,
   Heart,
-  Users,
   Calendar,
   MapPin,
   Trophy,
   Sparkles,
-  User,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,9 +27,7 @@ export default function Home({ user }: HomeProps) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div className="relative overflow-hidden pt-24 pb-12">
-        {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
           <div className="absolute inset-0">
             <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 left-10 animate-pulse" />
@@ -91,13 +87,13 @@ export default function Home({ user }: HomeProps) {
               className="flex flex-wrap justify-center gap-4 pt-4"
             >
               {user ? (
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-center"
-                >
+                <motion.div whileTap={{ scale: 0.95 }} className="text-center">
                   <p className="text-xl text-gray-700 mb-4">
-                    Welcome back, <span className="font-bold text-green-600">{user.name}</span>!
+                    Welcome back,{" "}
+                    <span className="font-semibold text-green-600">
+                      {user.name}
+                    </span>
+                    &nbsp;!
                   </p>
                   <Button
                     size="lg"
@@ -126,7 +122,6 @@ export default function Home({ user }: HomeProps) {
         </div>
       </div>
 
-      {/* Event Details */}
       <div
         id="details"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
@@ -159,10 +154,7 @@ export default function Home({ user }: HomeProps) {
             >
               <Card className="h-full border-2 border-transparent hover:border-green-200 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white to-green-50/30">
                 <CardHeader>
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
+                  <motion.div whileHover={{ scale: 1.1 }}>
                     <item.icon className="w-8 h-8 text-green-600 mb-2" />
                   </motion.div>
                   <CardTitle>{item.title}</CardTitle>
@@ -176,7 +168,6 @@ export default function Home({ user }: HomeProps) {
           ))}
         </div>
 
-        {/* Objectives */}
         <div className="mb-16" id="about">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -221,7 +212,7 @@ export default function Home({ user }: HomeProps) {
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.2, rotate: 360 }}
+                  whileHover={{ scale: 1.2 }}
                   transition={{ type: "spring", stiffness: 200 }}
                   className={`w-20 h-20 bg-gradient-to-br from-${item.color}-100 to-${item.color}-200 rounded-2xl flex items-center justify-center mx-auto shadow-lg`}
                 >
@@ -234,7 +225,6 @@ export default function Home({ user }: HomeProps) {
           </div>
         </div>
 
-        {/* Key Features */}
         <div className="mb-16" id="features">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -258,12 +248,7 @@ export default function Home({ user }: HomeProps) {
                 desc: "Receive periodic insights and progress updates throughout the program",
                 delay: 0.1,
               },
-              {
-                emoji: "",
-                title: "Daily Tips & Challenges",
-                desc: "Get suggestions for offline activities like exercise, reading, and socializing",
-                delay: 0.2,
-              },
+
               {
                 emoji: "",
                 title: "Certification",

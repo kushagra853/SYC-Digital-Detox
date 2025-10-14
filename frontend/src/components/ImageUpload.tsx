@@ -231,7 +231,6 @@ export default function ImageUpload({
           )}
         </motion.button>
 
-        {/* Status Messages */}
         <AnimatePresence>
           {uploadStatus.type && (
             <motion.div
@@ -254,28 +253,11 @@ export default function ImageUpload({
               )}
               <div className="flex-1">
                 <p className="font-medium">{uploadStatus.message}</p>
-                {extractedData && (
-                  <div className="mt-2 text-sm space-y-1">
-                    {extractedData.unlocks && (
-                      <p>Unlocks: {extractedData.unlocks}</p>
-                    )}
-                    {extractedData.notifications && (
-                      <p>Notifications: {extractedData.notifications}</p>
-                    )}
-                    {extractedData.screenOn && (
-                      <p>Screen On: {extractedData.screenOn.formatted}</p>
-                    )}
-                    {extractedData.apps && extractedData.apps.length > 0 && (
-                      <p>Apps: {extractedData.apps.join(", ")}</p>
-                    )}
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Instructions */}
         <div className="text-xs text-gray-500 space-y-1 pt-2 border-t">
           <p className="font-medium">Tips for best results:</p>
           <ul className="list-disc list-inside space-y-0.5 ml-2">
