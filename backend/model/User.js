@@ -39,6 +39,32 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone type is required"],
     },
+    totalScreenTime: {
+      type: Number,
+      default: 0,
+      // Total screen time in minutes
+    },
+    screenTimeSubmissions: [
+      {
+        uploadId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Upload",
+          required: true,
+        },
+        screenTime: {
+          type: String,
+          required: true,
+        },
+        totalMinutes: {
+          type: Number,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

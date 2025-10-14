@@ -18,6 +18,7 @@ export const signup = async (req, res) => {
       year,
       whatsappNumber,
       phoneType,
+      totalScreenTime: 0,
     });
 
     const savedUser = await newUser.save();
@@ -33,6 +34,7 @@ export const signup = async (req, res) => {
         year: savedUser.year,
         whatsappNumber: savedUser.whatsappNumber,
         phoneType: savedUser.phoneType,
+        totalScreenTime: savedUser.totalScreenTime,
       },
     });
   } catch (error) {

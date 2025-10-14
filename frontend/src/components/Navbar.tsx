@@ -10,7 +10,11 @@ interface NavbarProps {
   onLogout?: () => void;
 }
 
-export default function Navbar({ showGetStarted = true, user, onLogout }: NavbarProps) {
+export default function Navbar({
+  showGetStarted = true,
+  user,
+  onLogout,
+}: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -126,7 +130,9 @@ export default function Navbar({ showGetStarted = true, user, onLogout }: Navbar
                     <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-gray-700 font-medium">{user.name}</span>
+                    <span className="text-gray-700 font-medium">
+                      {user.name}
+                    </span>
                   </div>
                   <Button
                     variant="outline"
