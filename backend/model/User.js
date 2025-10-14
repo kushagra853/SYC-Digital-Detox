@@ -28,6 +28,17 @@ const userSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Year is required"],
     },
+    whatsappNumber: {
+      type: String,
+      required: [true, "WhatsApp number is required"],
+      unique: true,
+      trim: true,
+      match: [/^\d{10}$/, "Please fill a valid 10-digit WhatsApp number"],
+    },
+    phoneType: {
+      type: String,
+      required: [true, "Phone type is required"],
+    },
   },
   { timestamps: true }
 );

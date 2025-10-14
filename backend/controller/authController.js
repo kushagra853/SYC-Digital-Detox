@@ -2,9 +2,9 @@ import User from "../model/User.js";
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, admNo, year } = req.body;
+    const { name, email, admNo, year, whatsappNumber, phoneType } = req.body;
 
-    if (!name || !email || !admNo || !year) {
+    if (!name || !email || !admNo || !year || !whatsappNumber || !phoneType) {
       return res.status(400).json({
         success: false,
         message: "Please provide all required fields.",
@@ -16,6 +16,8 @@ export const signup = async (req, res) => {
       email,
       admNo,
       year,
+      whatsappNumber,
+      phoneType,
     });
 
     const savedUser = await newUser.save();
@@ -29,6 +31,8 @@ export const signup = async (req, res) => {
         email: savedUser.email,
         admNo: savedUser.admNo,
         year: savedUser.year,
+        whatsappNumber: savedUser.whatsappNumber,
+        phoneType: savedUser.phoneType,
       },
     });
   } catch (error) {

@@ -45,6 +45,8 @@ export default function RegistrationForm({
     email: "",
     admNo: "",
     year: "",
+    whatsappNumber: "",
+    phoneType: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +56,9 @@ export default function RegistrationForm({
       !formData.name ||
       !formData.email ||
       !formData.admNo ||
-      !formData.year
+      !formData.year ||
+      !formData.whatsappNumber ||
+      !formData.phoneType
     ) {
       toast.error("Please fill all fields");
       return;
@@ -86,7 +90,6 @@ export default function RegistrationForm({
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="absolute inset-0">
           <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 left-10 animate-pulse" />
@@ -97,9 +100,7 @@ export default function RegistrationForm({
         </div>
       </div>
 
-      {/* Content */}
       <div className="relative w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
-        {/* Left Side - Branding */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -107,16 +108,6 @@ export default function RegistrationForm({
           className="hidden md:block space-y-6"
         >
           <div className="space-y-4">
-            <motion.div whileHover={{ scale: 1.05 }} className="inline-block">
-              <Button
-                variant="ghost"
-                onClick={onBack}
-                className="mb-4 hover:bg-white/50 backdrop-blur-sm"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
-              </Button>
-            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -129,7 +120,7 @@ export default function RegistrationForm({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-6xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent"
+              className="text-6xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent pb-4"
             >
               Digital Detox
             </motion.h2>
@@ -139,8 +130,7 @@ export default function RegistrationForm({
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-600 max-w-md"
             >
-              Start your journey to a healthier digital life. Join 60+ students
-              in this transformative 10-day program.
+              Join in this transformative 10-day program and win prizes along.
             </motion.p>
           </div>
           <motion.div
@@ -170,7 +160,6 @@ export default function RegistrationForm({
           </motion.div>
         </motion.div>
 
-        {/* Right Side - Form */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -269,6 +258,56 @@ export default function RegistrationForm({
                     value={formData.admNo}
                     onChange={(e) =>
                       setFormData({ ...formData, admNo: e.target.value })
+                    }
+                    required
+                    className="border-2 focus:border-green-400 transition-colors"
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-2"
+                >
+                  <Label htmlFor="admNo" className="flex items-center gap-2">
+                    <IdCard className="w-4 h-4 text-green-600" />
+                    WhatsApp Number
+                  </Label>
+                  <Input
+                    id="whatsappNumber"
+                    placeholder="Enter your WhatsApp number"
+                    value={formData.whatsappNumber}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        whatsappNumber: e.target.value,
+                      })
+                    }
+                    required
+                    className="border-2 focus:border-green-400 transition-colors"
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="phoneType"
+                    className="flex items-center gap-2"
+                  >
+                    <IdCard className="w-4 h-4 text-green-600" />
+                    Phone Type
+                  </Label>
+                  <Input
+                    id="phoneType"
+                    placeholder="Enter your phone type (samsumg, iphone, etc."
+                    value={formData.phoneType}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phoneType: e.target.value })
                     }
                     required
                     className="border-2 focus:border-green-400 transition-colors"
