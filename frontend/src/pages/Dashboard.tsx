@@ -93,7 +93,8 @@ export default function Dashboard({ user }: DashboardProps) {
   const fetchUserStatus = async () => {
     try {
       const res = await fetch(
-        `https://syc-digital-detox.onrender.com/api/admin/user-status/${user.id}`
+        `https://syc-digital-detox.onrender.com/api/admin/user-status/${user.id}` ||
+          `http://localhost:5000/api/admin/user-status/${user.id}`
       );
       const data = await res.json();
       if (data.success) setUserStatus(data.data);

@@ -5,7 +5,8 @@ declare const process: { env?: { API_URL?: string } } | undefined;
 const api = axios.create({
   baseURL:
     (typeof process !== "undefined" && process.env?.API_URL) ||
-    "https://syc-digital-detox.onrender.com/api",
+    "https://syc-digital-detox.onrender.com/api" ||
+    "http://localhost:5000/api",
   headers: {
     "Content-Type": "application/json",
   },

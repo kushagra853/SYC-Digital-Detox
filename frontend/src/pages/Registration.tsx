@@ -12,6 +12,7 @@ import {
   LogIn,
   Eye,
   EyeOff,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import api, { loginUser } from "../api";
@@ -221,6 +222,7 @@ function RegistrationForm({
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -236,16 +238,24 @@ function RegistrationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     if (Object.values(formData).some((val) => val === "")) {
-      toast.error("Please fill all fields");
+      const errorMsg = "Please fill in all required fields";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
     if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+      const errorMsg = "Password must be at least 6 characters long";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
     if (!passwordsMatch) {
-      toast.error("Passwords do not match");
+      const errorMsg = "Passwords do not match";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
@@ -258,10 +268,11 @@ function RegistrationForm({
       toast.success(response.data.message || "Registration successful!");
       onRegisterSuccess(response.data.user);
     } catch (error: any) {
-      toast.error(
+      const errorMsg =
         error.response?.data?.message ||
-          "An unexpected error occurred. Please try again."
-      );
+        "An unexpected error occurred. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       console.error("Registration failed:", error);
     } finally {
       setIsLoading(false);
@@ -271,6 +282,7 @@ function RegistrationForm({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+    if (error) setError(null);
   };
 
   return (
@@ -295,6 +307,17 @@ function RegistrationForm({
               Join the Digital Detox program today
             </p>
           </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2"
+            >
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -476,9 +499,10 @@ function RegistrationForm({
               </label>
               <Select
                 value={formData.year}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, year: value })
-                }
+                onValueChange={(value) => {
+                  setFormData({ ...formData, year: value });
+                  if (error) setError(null);
+                }}
                 required
                 disabled={isLoading}
               >
@@ -542,13 +566,18 @@ function LoginForm({
   isLogin,
 }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ admNo: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     if (!formData.admNo || !formData.password) {
-      toast.error("Please fill all fields");
+      const errorMsg = "Please enter both admission number and password";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
     setIsLoading(true);
@@ -557,10 +586,11 @@ function LoginForm({
       toast.success(response.message || "Login successful!");
       onLoginSuccess(response.user);
     } catch (error: any) {
-      toast.error(
+      const errorMsg =
         error.response?.data?.message ||
-          "An unexpected error occurred. Please try again."
-      );
+        "An unexpected error occurred. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       console.error("Login failed:", error);
     } finally {
       setIsLoading(false);
@@ -589,6 +619,18 @@ function LoginForm({
               Sign in to continue your Digital Detox
             </p>
           </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2"
+            >
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label
@@ -601,9 +643,10 @@ function LoginForm({
                 id="admNo"
                 type="text"
                 value={formData.admNo}
-                onChange={(e) =>
-                  setFormData({ ...formData, admNo: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, admNo: e.target.value });
+                  if (error) setError(null);
+                }}
                 placeholder="Enter your admission number"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -623,9 +666,10 @@ function LoginForm({
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (error) setError(null);
+                  }}
                   placeholder="Enter your password"
                   required
                   className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
