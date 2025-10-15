@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, MapPin, Phone, Linkedin } from "lucide-react";
+import { User, MapPin, Phone } from "lucide-react";
 import Instagram from "../assets/instagram.svg";
 import WhatsApp from "../assets/whatsapp.svg";
 
@@ -15,7 +15,7 @@ export default function Footer() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -44,29 +44,56 @@ export default function Footer() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <h3 className="text-green-300 mb-4">Organized by</h3>
+            <div className="text-sm text-gray-300">
+              <p>Sanjeevani and Yoga Club</p>
+              <p className="text-xs text-gray-400 mt-1">
+                The Fitness Club of ABESEC
+              </p>
+              <div className="mt-4">
+                <p>Ms. Shweta Choudhary</p>
+                <p className="text-xs text-gray-400 mt-1">(Club Counsellor)</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
             <h3 className="text-green-300 mb-4">Contact</h3>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-300">ABESEC, Ghaziabad</span>
+                <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                <span>ABESEC, Ghaziabad</span>
               </li>
-              <li className="flex items-start gap-2">
-                <ul className="flex flex-col gap-1">
-                  <li className="flex items-start gap-2">
-                    <span className="text-gray-300">
-                      <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                      Mr. Vivek
-                    </span>
-                  </li>
-                  <li>
-                    <span className="text-gray-300">
-                      <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                      +91 83683 57994
-                    </span>
-                  </li>
-                </ul>
+
+              <li>
+                <div className="flex items-start gap-2">
+                  <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <p>Ms. Aditi Karn</p>
+                    <p className="text-xs text-gray-400">(General Secretary)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2 mt-2 ml-6">
+                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                  <span>+91 80765 99167</span>
+                </div>
+              </li>
+              <li>
+                <div className="flex items-start gap-2">
+                  <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                  <span>Mr. Vivek</span>
+                </div>
+                <div className="flex items-start gap-2 mt-2 ml-6">
+                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                  <span>+91 83683 57994</span>
+                </div>
               </li>
             </ul>
           </motion.div>
@@ -96,32 +123,6 @@ export default function Footer() {
               >
                 <img src={WhatsApp} alt="WhatsApp" className="w-8 h-8" />
               </motion.a>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className="text-sm text-gray-300">
-              <p className="text-green-300 mb-2">Organized by:</p>
-              <p>Sanjeevani and Yoga Club</p>
-              <p className="text-xs text-gray-400 mt-1">
-                The Fitness Club of ABESEC
-              </p>
-              <br />
-              <p>Ms. Aditi Karn</p>
-              <p className="text-xs text-gray-400 mt-1 pb-1">
-                (General Secretary)
-              </p>
-              <p>Contact : +91 80765 99167</p>
-              <br />
-              <p>Ms. Shweta Choudhary</p>
-              <p className="text-xs text-gray-400 mt-1 pb-1">
-                (Club Counsellor)
-              </p>
             </div>
           </motion.div>
         </div>

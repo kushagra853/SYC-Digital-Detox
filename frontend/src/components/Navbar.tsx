@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, Menu, X, User } from "lucide-react";
+import { Menu, X, User, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +67,7 @@ export default function Navbar({
             </div>
           </motion.div>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -85,25 +85,28 @@ export default function Navbar({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 border border-gray-100 py-1"
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 border border-gray-100 p-2 space-y-1"
                   >
                     <button
                       onClick={() => {
                         navigate("/dashboard");
                         setIsDropdownOpen(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600"
+                      className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-colors rounded-md"
                     >
-                      Dashboard
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Dashboard</span>
                     </button>
+                    <hr className="my-1 border-gray-200" />
                     <button
                       onClick={() => {
                         onLogout?.();
                         setIsDropdownOpen(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600"
+                      className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-colors rounded-md"
                     >
-                      Logout
+                      <LogOut className="w-4 h-4 text-red-500" />
+                      <span>Logout</span>
                     </button>
                   </motion.div>
                 )}
@@ -142,21 +145,19 @@ export default function Navbar({
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden py-4 space-y-4"
           >
-            {user && (
-              <a
-                href="/dashboard"
-                className="block text-gray-600 hover:text-green-600 transition-colors"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/dashboard");
-                  setMobileMenuOpen(false);
-                }}
-              >
-                Dashboard
-              </a>
-            )}
             {user ? (
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-200 space-y-4">
+                <a
+                  href="/dashboard"
+                  className="block text-gray-600 hover:text-green-600 transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/dashboard");
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Dashboard
+                </a>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center">

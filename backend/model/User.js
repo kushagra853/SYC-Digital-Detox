@@ -13,10 +13,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Please fill a valid email address",
-      ],
     },
     admNo: {
       type: String,
@@ -48,8 +44,9 @@ const userSchema = new mongoose.Schema(
     totalScreenTime: {
       type: Number,
       default: 0,
-      // Total screen time in minutes
     },
+    consecutiveLimitExceeded: { type: Boolean, default: false },
+    limitExceedCount: { type: Number, default: 0, max: 3 },
     screenTimeSubmissions: [
       {
         uploadId: {
