@@ -350,8 +350,8 @@ export default function Home({ user }: HomeProps) {
                   <p>Clear screen shot of digital well being</p>
                 </li>
                 <li>
-                  Submission should be done in the window alloted : 9 : 00 pm to
-                  9 : 30 pm
+                  Submission should be done in the window alloted: 10: 00 pm to
+                  11 : 59 pm
                 </li>
                 <li>
                   <h2>Image submission Guidelines</h2>
@@ -372,11 +372,17 @@ export default function Home({ user }: HomeProps) {
                 </li>
                 <li>Submitting falsified or edited screenshots</li>
                 <li>
-                  Exceeding the daily limit by more than 2 hours or more than 2
-                  or more consecutive times will be consider as Disqualification
+                  Exceeding the daily limit by more than 2 hours consecutively 2
+                  times and a total of 3 times will be consider as
+                  Disqualification
                 </li>
               </ul>
             </div>
+
+            <h2>
+              Phone of the podium finishers will be checked by authorites to
+              avoid any cheating
+            </h2>
           </div>
         </motion.div>
 
