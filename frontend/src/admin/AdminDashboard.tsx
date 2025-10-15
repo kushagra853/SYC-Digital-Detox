@@ -244,8 +244,9 @@ export default function AdminDashboard() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 rounded-lg p-2"
+            className="flex items-center gap-2 rounded-lg"
           >
+            <img src="/logo.webp" alt="SYC logo" className="h-20 w-20" />
             <span className="text-xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               Admin Dashboard
             </span>

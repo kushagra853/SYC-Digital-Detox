@@ -39,8 +39,8 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
-            <Shield className="w-7 h-7 text-green-700" />
+          <div className="inline-flex items-center justify-center w-40 h-40 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
+            <img src="/logo.webp" alt="SYC logo" className="h-39 w-39" />
           </div>
           <h1 className="text-2xl font-semibold text-slate-800 mb-1">
             Admin Portal
