@@ -54,8 +54,12 @@ export default function Navbar({
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/")}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
-              <img src="/logo.png" alt="Digital Detox Logo" className="w-8 h-8" />
+            <div className="w-11 h-11 bg-gradient-to-br from-white to-zinc-100 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
+              <img
+                src="/logo.png"
+                alt="Digital Detox Logo"
+                className="w-11 h-11"
+              />
             </div>
             <div>
               <div className="text-lg text-gray-900">Digital Detox</div>

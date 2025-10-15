@@ -21,8 +21,12 @@ export default function Footer() {
             className="space-y-4"
           >
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                <img src="/logo.png" alt="Digital Detox Logo" className="w-8 h-8" />
+              <div className="w-11 h-11 bg-gradient-to-br from-emerald-800 via-white/10 to-zinc-700/10 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
+                <img
+                  src="/logo.png"
+                  alt="Digital Detox Logo"
+                  className="w-11 h-11"
+                />
               </div>
               <div>
                 <div className="text-lg">Digital Detox</div>
