@@ -109,6 +109,20 @@ export default function RegistrationPage({
           transition={{ duration: 0.6 }}
           className="hidden md:block space-y-6"
         >
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-4 cursor-pointer"
+          >
+            <div className="w-40 h-40 bg-gradient-to-br from-white to-zinc-100 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+              <img
+                src="/logo.png"
+                alt="Digital Detox Logo"
+                className="w-40 h-40"
+              />
+            </div>
+          </motion.div>
           <div className="space-y-4">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -122,7 +136,7 @@ export default function RegistrationPage({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-6xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent pb-4"
+              className="text-6xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent pb-4"
             >
               Digital Detox
             </motion.h2>
@@ -226,9 +240,9 @@ function RegistrationForm({
     }
     setIsLoading(true);
     try {
+      console.log(formData);
       const response = await api.post("/auth/signup", {
         ...formData,
-        year: parseInt(formData.year),
       });
       toast.success(response.data.message || "Registration successful!");
       onRegisterSuccess(response.data.user);
@@ -434,12 +448,18 @@ function RegistrationForm({
                   <SelectValue placeholder="Select your year & program" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">B.Tech - 1st Year</SelectItem>
-                  <SelectItem value="2">B.Tech - 2nd Year</SelectItem>
-                  <SelectItem value="3">B.Tech - 3rd Year</SelectItem>
-                  <SelectItem value="11">MCA - 1st Year</SelectItem>
-                  <SelectItem value="12">MCA - 2nd Year</SelectItem>
-                  <SelectItem value="21">MBA - 1st Year</SelectItem>
+                  <SelectItem value="B.Tech  - 1st year">
+                    B.Tech - 1st Year
+                  </SelectItem>
+                  <SelectItem value="B.Tech - 2nd Year">
+                    B.Tech - 2nd Year
+                  </SelectItem>
+                  <SelectItem value="B.Tech - 3rd Year">
+                    B.Tech - 3rd Year
+                  </SelectItem>
+                  <SelectItem value="MCA - 1st Year">MCA - 1st Year</SelectItem>
+                  <SelectItem value="MCA - 2nd Year">MCA - 2nd Year</SelectItem>
+                  <SelectItem value="MBA - 1st Year">MBA - 1st Year</SelectItem>
                 </SelectContent>
               </Select>
             </div>

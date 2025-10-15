@@ -285,16 +285,10 @@ export default function Home({ user }: HomeProps) {
                 delay: 0.1,
               },
               {
-                icon: Target,
-                title: "Goal Setting",
-                desc: "Set personalized milestones and track your progress toward digital wellness",
-                delay: 0.15,
-              },
-              {
                 icon: Trophy,
                 title: "Certification",
                 desc: "Earn a participation certificate upon completing the program",
-                delay: 0.2,
+                delay: 0.15,
               },
             ].map((item, idx) => (
               <motion.div

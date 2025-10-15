@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     year: {
-      type: Number,
+      type: String,
       required: [true, "Year is required"],
     },
     whatsappNumber: {
