@@ -790,8 +790,10 @@ export default function Home({ user }: HomeProps) {
                 <Button
                   size="lg"
                   className="bg-white text-green-600 hover:bg-gray-100 shadow-2xl hover:shadow-2xl transition-all text-lg px-10 py-7 font-semibold"
-                  onClick={(user) =>
-                    navigate(user ? "/dashboard " : "/register")
+                  onClick={
+                    user
+                      ? () => navigate("/dashboard")
+                      : () => navigate("/register")
                   }
                 >
                   {user ? "Continue Your Journey" : "Register Now - It's Free"}
