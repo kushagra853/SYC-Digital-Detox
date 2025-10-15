@@ -191,7 +191,7 @@ export default function Home({ user }: HomeProps) {
           transition={{ duration: 0.6 }}
           className="mb-20"
         >
-          <motion.h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4">
+          <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900 text-center mb-4">
             Program Objectives
           </motion.h2>
           <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
@@ -263,7 +263,7 @@ export default function Home({ user }: HomeProps) {
           transition={{ duration: 0.6 }}
           className="mb-20"
         >
-          <motion.h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4">
+          <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900 text-center mb-4">
             Program Features
           </motion.h2>
           <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
@@ -329,6 +329,58 @@ export default function Home({ user }: HomeProps) {
         </motion.div>
 
         <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900 text-center mb-4">
+            Rules and Regulations
+          </motion.h2>
+          <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
+            Rules for submission and elimination of participants
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <motion.h2 className="text-gray-600">Submission Rules</motion.h2>
+            <div>
+              <ul>
+                <li>
+                  <p>Clear screen shot of digital well being</p>
+                </li>
+                <li>
+                  Submission should be done in the window alloted : 9 : 00 pm to
+                  9 : 30 pm
+                </li>
+                <li>
+                  <h2>Image submission Guidelines</h2>
+                  <ul className="p-2">
+                    <li>Use a clear, high-resolution screenshot.</li>
+                    <li>Ensure screen time text is visible and not cropped.</li>
+                    <li>Avoid blurry or low-light images.</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+
+            <motion.h2 className="text-gray-600">Elimination Rules</motion.h2>
+            <div>
+              <ul>
+                <li>
+                  <p>Missing 2 or more submissions</p>
+                </li>
+                <li>Submitting falsified or edited screenshots</li>
+                <li>
+                  Exceeding the daily limit by more than 2 hours or more than 2
+                  or more consecutive times will be consider as Disqualification
+                </li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -367,7 +419,9 @@ export default function Home({ user }: HomeProps) {
                 <Button
                   size="lg"
                   className="bg-white text-green-600 hover:bg-gray-100 shadow-2xl hover:shadow-2xl transition-all text-lg px-10 py-7 font-semibold"
-                  onClick={() => navigate("/dashboard")}
+                  onClick={(user) =>
+                    navigate(user ? "/dashboard " : "/register")
+                  }
                 >
                   {user ? "Continue Your Journey" : "Register Now - It's Free"}
                 </Button>

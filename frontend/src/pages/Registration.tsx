@@ -306,7 +306,7 @@ function RegistrationForm({
                 htmlFor="email"
                 className="text-sm font-medium text-slate-700 block"
               >
-                Email Address
+                College Email
               </label>
               <input
                 id="email"

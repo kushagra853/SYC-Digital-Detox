@@ -1,5 +1,7 @@
-import { motion } from "framer-motion"; // Corrected import
-import { Heart, MapPin, Phone, Instagram, Linkedin } from "lucide-react";
+import { motion } from "framer-motion";
+import { User, MapPin, Phone, Linkedin } from "lucide-react";
+import Instagram from "../assets/instagram.svg";
+import WhatsApp from "../assets/whatsapp.svg";
 
 export default function Footer() {
   return (
@@ -51,8 +53,20 @@ export default function Footer() {
                 <span className="text-gray-300">ABESEC, Ghaziabad</span>
               </li>
               <li className="flex items-start gap-2">
-                <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-300">+91 XXX XXX XXXX</span>
+                <ul className="flex flex-col gap-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-gray-300">
+                      <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                      Mr. Vivek
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-gray-300">
+                      <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                      +91 83683 57994
+                    </span>
+                  </li>
+                </ul>
               </li>
             </ul>
           </motion.div>
@@ -66,20 +80,21 @@ export default function Footer() {
             <h3 className="text-green-300 mb-4">Follow Us</h3>
             <div className="flex gap-3">
               <motion.a
-                href="#"
+                href="https://www.instagram.com/syc_abesec/"
+                target="_blank"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 bg-white/10 hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
               >
-                <Instagram className="w-5 h-5" />
+                <img src={Instagram} alt="Instagram" className="w-8 h-8" />
               </motion.a>
               <motion.a
                 href="#"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 bg-white/10 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
               >
-                <Linkedin className="w-5 h-5" />
+                <img src={WhatsApp} alt="WhatsApp" className="w-8 h-8" />
               </motion.a>
             </div>
           </motion.div>
@@ -98,10 +113,15 @@ export default function Footer() {
               </p>
               <br />
               <p>Ms. Aditi Karn</p>
-              <p>(General Secretary)</p>
+              <p className="text-xs text-gray-400 mt-1 pb-1">
+                (General Secretary)
+              </p>
+              <p>Contact : +91 80765 99167</p>
               <br />
               <p>Ms. Shweta Choudhary</p>
-              <p>(Club Counsellor)</p>
+              <p className="text-xs text-gray-400 mt-1 pb-1">
+                (Club Counsellor)
+              </p>
             </div>
           </motion.div>
         </div>
