@@ -120,7 +120,7 @@ export default function RegistrationPage({
           >
             <div className="w-40 h-40 bg-gradient-to-br from-white to-zinc-100 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Digital Detox Logo"
                 className="w-40 h-40"
               />

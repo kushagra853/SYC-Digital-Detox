@@ -56,7 +56,7 @@ export default function Navbar({
           >
             <div className="w-11 h-11 bg-gradient-to-br from-white to-zinc-100 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Digital Detox Logo"
                 className="w-11 h-11"
               />

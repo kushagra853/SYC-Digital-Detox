@@ -310,7 +310,7 @@ export default function Home({ user }: HomeProps) {
               >
                 <Sparkles className="w-12 h-12 text-white drop-shadow-lg" />
               </motion.div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+              <h3 className="text-2xl md:text-3xl font-semibold text-white mb-3">
                 Join Us in This Transformative Journey
               </h3>
               <p className="text-green-50 text-lg max-w-2xl mx-auto">
