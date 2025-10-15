@@ -350,7 +350,7 @@ function RegistrationForm({
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="your.email@example.com"
+                placeholder="User.24b01011XX@abes.ac.in"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 disabled={isLoading}
