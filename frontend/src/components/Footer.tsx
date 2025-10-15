@@ -22,7 +22,7 @@ export default function Footer() {
           >
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Heart className="w-6 h-6 text-white" />
+                <img src="/logo.png" alt="Digital Detox Logo" className="w-8 h-8" />
               </div>
               <div>
                 <div className="text-lg">Digital Detox</div>

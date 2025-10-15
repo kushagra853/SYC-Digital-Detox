@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   showGetStarted?: boolean;
-  user?: { name: string; [key: string]: any }; // Assuming user has a name property
+  user?: { name: string; [key: string]: any };
   onLogout?: () => void;
 }
 
@@ -16,14 +16,11 @@ export default function Navbar({
   onLogout,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // State to manage the visibility of the user dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Ref to the dropdown container for detecting outside clicks
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Effect to close the dropdown when clicking outside of it
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -33,11 +30,10 @@ export default function Navbar({
         setIsDropdownOpen(false);
       }
     }
-    // Add event listener when the dropdown is open
     if (isDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    // Cleanup the event listener
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -58,8 +54,8 @@ export default function Navbar({
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/")}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
-              <Heart className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-6 transition-transform">
+              <img src="/logo.png" alt="Digital Detox Logo" className="w-8 h-8" />
             </div>
             <div>
               <div className="text-lg text-gray-900">Digital Detox</div>
@@ -69,9 +65,7 @@ export default function Navbar({
 
           <div className="hidden md:flex items-center gap-8">
             {user ? (
-              // The container for the user info and dropdown
               <div className="relative" ref={dropdownRef}>
-                {/* This button now toggles the dropdown */}
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -82,7 +76,6 @@ export default function Navbar({
                   <span className="text-gray-700 font-medium">{user.name}</span>
                 </button>
 
-                {/* The Dropdown Menu */}
                 {isDropdownOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
@@ -126,7 +119,6 @@ export default function Navbar({
             ) : null}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -139,7 +131,6 @@ export default function Navbar({
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -147,7 +138,6 @@ export default function Navbar({
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden py-4 space-y-4"
           >
-            {/* Added Dashboard link for mobile view when user is logged in */}
             {user && (
               <a
                 href="/dashboard"

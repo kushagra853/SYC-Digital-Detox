@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -15,6 +15,8 @@ import {
   MapPin,
   Trophy,
   Sparkles,
+  Zap,
+  Target,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +28,7 @@ export default function Home({ user }: HomeProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <div className="relative overflow-hidden pt-24 pb-12">
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
           <div className="absolute inset-0">
@@ -76,8 +78,8 @@ export default function Home({ user }: HomeProps) {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-xl text-gray-700 max-w-2xl mx-auto"
             >
-              Join us for a transformative 10-day journey to reduce screen
-              dependency and rediscover the joy of offline living
+              Join a 10-day journey to reduce screen dependency and rediscover
+              the joy of offline living
             </motion.p>
 
             <motion.div
@@ -87,7 +89,7 @@ export default function Home({ user }: HomeProps) {
               className="flex flex-wrap justify-center gap-4 pt-4"
             >
               {user ? (
-                <motion.div whileTap={{ scale: 0.95 }} className="text-center">
+                <div>
                   <p className="text-xl text-gray-700 mb-4">
                     Welcome back,{" "}
                     <span className="font-semibold text-green-600">
@@ -95,21 +97,25 @@ export default function Home({ user }: HomeProps) {
                     </span>
                     &nbsp;!
                   </p>
-                  <Button
-                    size="lg"
-                    onClick={() => navigate("/dashboard")}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    className="text-center"
                   >
-                    Go to Dashboard
-                  </Button>
-                </motion.div>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      View Dashboard
+                    </Button>
+                  </motion.div>
+                </div>
               ) : (
                 <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button
-                    onClick={() => navigate("/register")}
                     size="lg"
                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-2xl transition-all text-lg px-8 py-6"
                   >
@@ -122,11 +128,8 @@ export default function Home({ user }: HomeProps) {
         </div>
       </div>
 
-      <div
-        id="details"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-      >
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid md:grid-cols-2 gap-8 mb-20">
           {[
             {
               icon: Calendar,
@@ -142,42 +145,60 @@ export default function Home({ user }: HomeProps) {
               subtext: "Join from anywhere",
               delay: 0.1,
             },
-          ].map((item) => (
+          ].map((item, idx) => (
             <motion.div
               key={item.title}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: item.delay }}
-              whileHover={{ y: -10, rotateX: 5 }}
-              style={{ transformStyle: "preserve-3d" }}
+              transition={{ duration: 0.6, delay: item.delay }}
+              className="perspective"
             >
-              <Card className="h-full border-2 border-transparent hover:border-green-200 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white to-green-50/30">
-                <CardHeader>
-                  <motion.div whileHover={{ scale: 1.1 }}>
-                    <item.icon className="w-8 h-8 text-green-600 mb-2" />
-                  </motion.div>
-                  <CardTitle>{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">{item.text}</p>
-                  <p className="text-sm text-gray-500 mt-1">{item.subtext}</p>
-                </CardContent>
-              </Card>
+              <motion.div
+                whileHover={{ y: -15, rotateX: 8 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <Card className="h-full border border-green-200/40 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white via-green-50/30 to-emerald-50/20 overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <CardHeader className="relative z-10">
+                    <motion.div className="inline-flex">
+                      <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center group-hover:shadow-lg transition-shadow">
+                        <item.icon className="w-7 h-7 text-green-600" />
+                      </div>
+                    </motion.div>
+                    <CardTitle className="text-2xl mt-4">
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <p className="text-lg font-semibold text-gray-900">
+                      {item.text}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">{item.subtext}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
           ))}
         </div>
 
-        <div className="mb-16" id="about">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl text-gray-900 text-center mb-12"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <motion.h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4">
             Program Objectives
           </motion.h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
+            Transform your relationship with technology through our
+            comprehensive approach
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
             {[
               {
                 icon: Smartphone,
@@ -200,143 +221,164 @@ export default function Home({ user }: HomeProps) {
                 color: "teal",
                 delay: 0.2,
               },
-            ].map((item) => (
+            ].map((item, idx) => (
               <motion.div
                 key={item.title}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: item.delay }}
-                whileHover={{ scale: 1.05, y: -10 }}
-                className="text-center space-y-4 p-6 rounded-2xl hover:shadow-2xl transition-all duration-300 bg-white/50 backdrop-blur-sm"
-                style={{ transformStyle: "preserve-3d" }}
+                transition={{ duration: 0.6, delay: item.delay }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                  className={`w-20 h-20 bg-gradient-to-br from-${item.color}-100 to-${item.color}-200 rounded-2xl flex items-center justify-center mx-auto shadow-lg`}
+                  whileHover={{ scale: 1.08, rotateY: 5 }}
+                  transition={{ type: "spring", stiffness: 250 }}
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="h-full p-8 rounded-3xl bg-gradient-to-br from-white to-green-50/40 border border-green-200/40 shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden relative"
                 >
-                  <item.icon className={`w-10 h-10 text-${item.color}-600`} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 via-emerald-500/0 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10">
+                    <motion.div
+                      whileHover={{ scale: 1.2, rotate: 10 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-lg transition-shadow"
+                    >
+                      <item.icon className="w-8 h-8 text-green-600" />
+                    </motion.div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600">{item.desc}</p>
+                  </div>
                 </motion.div>
-                <h3 className="text-xl text-gray-900">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="mb-16" id="features">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl text-gray-900 text-center mb-12"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <motion.h2 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4">
             Program Features
           </motion.h2>
+          <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
+            Everything you need to succeed in your digital detox journey
+          </p>
+
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                emoji: "",
+                icon: Smartphone,
                 title: "Screen Time Tracking",
                 desc: "Monitor your daily screen usage and upload your digital wellbeing reports",
                 delay: 0,
               },
               {
-                emoji: "",
+                icon: Zap,
                 title: "Awareness Reports",
                 desc: "Receive periodic insights and progress updates throughout the program",
                 delay: 0.1,
               },
-
               {
-                emoji: "",
+                icon: Target,
+                title: "Goal Setting",
+                desc: "Set personalized milestones and track your progress toward digital wellness",
+                delay: 0.15,
+              },
+              {
+                icon: Trophy,
                 title: "Certification",
                 desc: "Earn a participation certificate upon completing the program",
-                delay: 0.3,
+                delay: 0.2,
               },
-            ].map((item) => (
+            ].map((item, idx) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: item.delay }}
-                whileHover={{ scale: 1.03, rotateY: 5 }}
-                style={{ transformStyle: "preserve-3d" }}
+                transition={{ duration: 0.6, delay: item.delay }}
               >
-                <Card className="h-full border-2 border-transparent hover:border-green-300 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white via-green-50/20 to-emerald-50/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <motion.span
-                        whileHover={{ scale: 1.3, rotate: 10 }}
-                        className="text-2xl"
-                      >
-                        {item.emoji}
-                      </motion.span>
-                      {item.title}
-                    </CardTitle>
-                    <CardDescription>{item.desc}</CardDescription>
-                  </CardHeader>
-                </Card>
+                <motion.div
+                  whileHover={{ y: -12, rotateY: 8, rotateX: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="h-full"
+                >
+                  <Card className="h-full border border-green-200/40 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white via-green-50/20 to-emerald-50/10 group overflow-hidden relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardHeader className="relative z-10">
+                      <div className="flex items-start gap-4">
+                        <motion.div
+                          whileHover={{ scale: 1.15, rotate: -10 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                          className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:shadow-lg transition-shadow"
+                        >
+                          <item.icon className="w-6 h-6 text-green-600" />
+                        </motion.div>
+                        <CardTitle className="text-lg">{item.title}</CardTitle>
+                      </div>
+                      <CardDescription className="mt-3 text-gray-600">
+                        {item.desc}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative overflow-hidden text-center space-y-6 py-16 bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 rounded-3xl shadow-2xl"
+          transition={{ duration: 0.6 }}
+          className="relative overflow-hidden p-5"
         >
-          {/* Animated background elements */}
-          <div className="absolute inset-0">
-            <div className="absolute w-64 h-64 bg-white/10 rounded-full blur-3xl top-0 left-0 animate-pulse" />
-            <div
-              className="absolute w-64 h-64 bg-white/10 rounded-full blur-3xl bottom-0 right-0 animate-pulse"
-              style={{ animationDelay: "1s" }}
-            />
-          </div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            style={{ transformStyle: "preserve-3d" }}
+            className="text-center space-y-8 py-20 px-8 bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 rounded-3xl shadow-xl relative overflow-hidden group"
+          >
+            <div className="relative z-10 ">
+              <motion.div
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+                className="flex justify-center"
+              >
+                <Trophy className="w-24 h-24 text-white drop-shadow-lg" />
+              </motion.div>
 
-          <div className="relative z-10">
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Trophy className="w-20 h-20 text-white mx-auto drop-shadow-lg" />
-            </motion.div>
-            <h2 className="text-3xl md:text-4xl text-white mt-4">
-              Ready to Transform Your Digital Life?
-            </h2>
-            <p className="text-green-100 text-lg max-w-2xl mx-auto px-4 pt-3 pb-5">
-              {user ? "Continue your journey" : "Register Now"}
-            </p>
-            <motion.div
-              whileHover={{ scale: 1.1, y: -5 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {user ? (
+              <h2 className="text-4xl md:text-5xl font-bold text-white mt-6">
+                Ready to Reclaim Your Life?
+              </h2>
+
+              <p className="text-green-100 text-xl max-w-3xl mx-auto px-4 mt-4">
+                Join us in transforming your relationship with technology. Start
+                your 10-day journey today.
+              </p>
+
+              <motion.div
+                whileHover={{ scale: 1.15, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-block mt-8"
+              >
                 <Button
+                  size="lg"
+                  className="bg-white text-green-600 hover:bg-gray-100 shadow-2xl hover:shadow-2xl transition-all text-lg px-10 py-7 font-semibold"
                   onClick={() => navigate("/dashboard")}
-                  size="lg"
-                  className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
                 >
-                  Go to Dashboard
+                  {user ? "Continue Your Journey" : "Register Now - It's Free"}
                 </Button>
-              ) : (
-                <Button
-                  onClick={() => navigate("/register")}
-                  size="lg"
-                  className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all text-lg px-8 py-6 mt-2"
-                >
-                  Register Now - Free
-                </Button>
-              )}
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
