@@ -7,6 +7,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { ocrService } from "./services/ocrService.js";
 import "./jobs/checkMissedSubmissions.js";
+import "./jobs/keepServerAlive.js";
 import rankingRoutes from "./routes/rankingRoutes.js";
 
 dotenv.config();
@@ -40,6 +41,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/rankings", rankingRoutes);
+
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);

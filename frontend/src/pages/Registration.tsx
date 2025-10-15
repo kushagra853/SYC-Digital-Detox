@@ -10,6 +10,8 @@ import {
   Lock,
   Loader2,
   LogIn,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import api, { loginUser } from "../api";
@@ -217,6 +219,8 @@ function RegistrationForm({
   isLogin,
 }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -228,16 +232,23 @@ function RegistrationForm({
     confirmPassword: "",
   });
 
+  const passwordsMatch = formData.password === formData.confirmPassword;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
     if (Object.values(formData).some((val) => val === "")) {
       toast.error("Please fill all fields");
       return;
     }
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+    if (!passwordsMatch) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
     try {
       console.log(formData);
@@ -255,6 +266,11 @@ function RegistrationForm({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   return (
@@ -292,9 +308,7 @@ function RegistrationForm({
                 id="name"
                 type="text"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={handleInputChange}
                 placeholder="Enter your full name"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -312,9 +326,7 @@ function RegistrationForm({
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChange={handleInputChange}
                 placeholder="your.email@example.com"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -332,15 +344,14 @@ function RegistrationForm({
                 id="admNo"
                 type="text"
                 value={formData.admNo}
-                onChange={(e) =>
-                  setFormData({ ...formData, admNo: e.target.value })
-                }
+                onChange={handleInputChange}
                 placeholder="Enter your admission number"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 disabled={isLoading}
               />
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label
@@ -349,18 +360,33 @@ function RegistrationForm({
                 >
                   Password
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  placeholder="Enter your password"
-                  required
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                  disabled={isLoading}
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter your password"
+                    required
+                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Password must be at least 6 characters long.
+                </p>
               </div>
               <div className="space-y-2">
                 <label
@@ -369,23 +395,42 @@ function RegistrationForm({
                 >
                   Confirm Password
                 </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  placeholder="Confirm your password"
-                  required
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                  disabled={isLoading}
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="Confirm your password"
+                    required
+                    className={`w-full pl-4 pr-10 py-2.5 bg-slate-50 border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+                      formData.confirmPassword && !passwordsMatch
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-slate-200 focus:ring-green-500"
+                    }`}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+                    aria-label="Toggle confirm password visibility"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                {formData.confirmPassword && !passwordsMatch && (
+                  <p className="text-xs text-red-600 mt-1">
+                    Passwords do not match.
+                  </p>
+                )}
               </div>
             </div>
+
             <div className="space-y-2">
               <label
                 htmlFor="whatsappNumber"
@@ -397,9 +442,7 @@ function RegistrationForm({
                 id="whatsappNumber"
                 type="tel"
                 value={formData.whatsappNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, whatsappNumber: e.target.value })
-                }
+                onChange={handleInputChange}
                 placeholder="Enter your WhatsApp number"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -417,12 +460,7 @@ function RegistrationForm({
                 id="phoneType"
                 type="text"
                 value={formData.phoneType}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    phoneType: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
                 placeholder="e.g., Samsung, iPhone, etc."
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -463,6 +501,7 @@ function RegistrationForm({
                 </SelectContent>
               </Select>
             </div>
+
             <div className="pt-2">
               <button
                 type="submit"
@@ -504,6 +543,7 @@ function LoginForm({
 }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ admNo: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -578,18 +618,32 @@ function LoginForm({
               >
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                placeholder="Enter your password"
-                required
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="Enter your password"
+                  required
+                  className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className="pt-2">
