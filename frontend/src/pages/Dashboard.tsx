@@ -200,69 +200,6 @@ export default function Dashboard({ user }: DashboardProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-500 text-xs font-medium mb-1">
-                      Avg Screen Time
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {submissions.length > 0
-                        ? (
-                            submissions.reduce(
-                              (sum, s) => sum + s.totalMinutes,
-                              0
-                            ) /
-                            submissions.length /
-                            60
-                          ).toFixed(1)
-                        : 0}
-                      &nbsp;h
-                    </p>
-                  </div>
-                  <div className="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-emerald-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 text-xs font-medium mb-1">
-                      Best Day
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {submissions.length > 0
-                        ? (
-                            Math.min(
-                              ...submissions.map((s) => s.totalMinutes)
-                            ) / 60
-                          ).toFixed(1)
-                        : 0}
-                      &nbsp;h
-                    </p>
-                  </div>
-                  <div className="w-11 h-11 bg-purple-50 rounded-xl flex items-center justify-center">
-                    <Target className="w-5 h-5 text-purple-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 text-xs font-medium mb-1">
                       Current Streak
                     </p>
                     <p className="text-2xl font-semibold text-gray-800">
@@ -289,7 +226,7 @@ export default function Dashboard({ user }: DashboardProps) {
                       Total Screen Time
                     </p>
                     <p className="text-2xl font-semibold text-gray-800">
-                      {totalScreenTime.totalScreenTimeHours} h
+                      {totalScreenTime.totalScreenTimeMinutes} mins
                     </p>
                   </div>
                   <div className="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center">
@@ -300,9 +237,8 @@ export default function Dashboard({ user }: DashboardProps) {
             </Card>
           </motion.div>
         </motion.div>
-        {/* Main Content - Two Columns */}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Upload Section */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -311,7 +247,6 @@ export default function Dashboard({ user }: DashboardProps) {
             <ImageUpload user={user} onUploadComplete={handleUploadComplete} />
           </motion.div>
 
-          {/* Recent Uploads */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -385,7 +320,7 @@ export default function Dashboard({ user }: DashboardProps) {
             </Card>
           </motion.div>
         </div>
-        {/* Screen Time Chart - Full Width */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -454,7 +389,7 @@ export default function Dashboard({ user }: DashboardProps) {
                         tickLine={false}
                         axisLine={{ stroke: "#e5e7eb" }}
                         label={{
-                          value: "Hours",
+                          value: "Minutes",
                           angle: -90,
                           position: "insideLeft",
                           style: {
@@ -468,17 +403,18 @@ export default function Dashboard({ user }: DashboardProps) {
                         content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
-                            const hours = parseFloat(data.screenTime);
+                            const mins = data.totalMinutes;
+
                             const status =
-                              hours <= 4
+                              mins <= 240
                                 ? "Great"
-                                : hours <= 8
+                                : mins <= 480
                                 ? "Moderate"
                                 : "High";
                             const statusColor =
-                              hours <= 4
+                              mins <= 240
                                 ? "text-emerald-600"
-                                : hours <= 8
+                                : mins <= 480
                                 ? "text-amber-600"
                                 : "text-red-600";
 
@@ -488,7 +424,7 @@ export default function Dashboard({ user }: DashboardProps) {
                                   {data.date}
                                 </p>
                                 <p className="text-indigo-600 font-medium text-sm">
-                                  {data.screenTime}h ({data.totalMinutes} min)
+                                  {data.totalMinutes} min
                                 </p>
                                 <p
                                   className={`text-xs font-medium ${statusColor} mt-1`}
@@ -503,7 +439,7 @@ export default function Dashboard({ user }: DashboardProps) {
                       />
                       <Area
                         type="monotone"
-                        dataKey="screenTime"
+                        dataKey="totalMinutes"
                         stroke="#6366f1"
                         strokeWidth={2}
                         fill="url(#colorScreenTime)"

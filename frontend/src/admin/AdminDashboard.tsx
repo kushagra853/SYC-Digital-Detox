@@ -114,7 +114,7 @@ export default function AdminDashboard() {
       if (dailyRes.success) setDailyStandings(dailyRes.data);
       if (overallRes.success) {
         const sorted = overallRes.data.sort(
-          (a: StandingData, b: StandingData) => a.totalHours - b.totalHours
+          (a: StandingData, b: StandingData) => a.totalMinutes - b.totalMinutes
         );
         setOverallStandings(sorted);
       }
@@ -419,7 +419,7 @@ function UsersView({ users }: { users: UserData[] }) {
                     </td>
                     <td className="py-3 px-4 text-gray-600">
                       <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm font-medium">
-                        {(user.totalScreenTime / 60).toFixed(1)}h
+                        {user.totalScreenTime}mins
                       </span>
                     </td>
                     <td className="py-3 px-4 text-gray-600">
@@ -461,7 +461,8 @@ function StandingsView({
   const groupedBarChartData = weeklyData?.users.map((user: any) => {
     const userData: { [key: string]: any } = { name: user.name };
     weeklyData.chartData.forEach((dayData: any) => {
-      userData[dayData.day] = dayData[user.name] || 0;
+      const hours = dayData[user.name] || 0;
+      userData[dayData.day] = Math.round(hours * 60) || 0;
     });
     return userData;
   });
@@ -595,15 +596,8 @@ function StandingsView({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 ${
-                      index === 0
-                        ? "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-300"
-                        : index === 1
-                        ? "bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300"
-                        : index === 2
-                        ? "bg-gradient-to-r from-orange-50 to-orange-100 border-orange-300"
-                        : "bg-white/80 border-green-100 hover:border-green-300"
-                    }`}
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300
+                    `}
                   >
                     <div className="flex items-center gap-4">
                       <motion.div
@@ -611,12 +605,8 @@ function StandingsView({
                         transition={{ duration: 0.5 }}
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
                           index === 0
-                            ? "bg-gradient-to-br from-yellow-400 to-yellow-600"
-                            : index === 1
-                            ? "bg-gradient-to-br from-gray-300 to-gray-500"
-                            : index === 2
-                            ? "bg-gradient-to-br from-orange-400 to-orange-600"
-                            : "bg-gradient-to-br from-blue-400 to-blue-600"
+                            ? "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400 "
+                            : "bg-gradient-to-br from-gray-400 via-gray-600 to-gray-500"
                         }`}
                       >
                         {index + 1}
@@ -632,7 +622,7 @@ function StandingsView({
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-gray-900 text-lg">
-                        {user.totalHours}h
+                        {user.totalMinutes} mins
                       </p>
                       <p className="text-sm text-gray-600">
                         {user.submissionsCount} submissions
@@ -673,14 +663,7 @@ function StandingsView({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 ${
-                      index === 0
-                        ? "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-300"
-                        : index === 1
-                        ? "bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300"
-                        : index === 2
-                        ? "bg-gradient-to-r from-orange-50 to-orange-100 border-orange-300"
-                        : "bg-white/80 border-green-100 hover:border-green-300"
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -690,11 +673,7 @@ function StandingsView({
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
                           index === 0
                             ? "bg-gradient-to-br from-yellow-400 to-yellow-600"
-                            : index === 1
-                            ? "bg-gradient-to-br from-gray-300 to-gray-500"
-                            : index === 2
-                            ? "bg-gradient-to-br from-orange-400 to-orange-600"
-                            : "bg-gradient-to-br from-blue-400 to-blue-600"
+                            : "bg-gradient-to-br from-gray-400 via-gray-600 to-gray-500"
                         }`}
                       >
                         {index + 1}
@@ -710,7 +689,7 @@ function StandingsView({
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-gray-900 text-lg">
-                        {user.totalHours}h
+                        {user.totalMinutes} mins
                       </p>
                       <p className="text-sm text-gray-600">
                         {user.submissionsCount} submissions
@@ -792,7 +771,7 @@ function StandingsView({
                                 {label}
                               </p>
                               <p className="text-emerald-600 font-medium mb-1">
-                                Total Screen Time: {data.totalHours}h
+                                Total Screen Time: {data.totalMinutes} mins
                               </p>
                               <p className="text-sm text-gray-600">
                                 Adm No: {data.admNo} | Submissions:{" "}
@@ -805,7 +784,7 @@ function StandingsView({
                       }}
                     />
                     <Bar
-                      dataKey="totalHours"
+                      dataKey="totalMinutes"
                       fill="url(#colorGradient)"
                       radius={[0, 6, 6, 0]}
                       maxBarSize={40}
