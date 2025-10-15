@@ -141,7 +141,7 @@ router.get("/weekly-standings", async (req, res) => {
       })
       .filter((user) => user.submissions.length > 0)
       .sort((a, b) => a.totalMinutes - b.totalMinutes)
-      .slice(0, 5); // Top 5 users
+      .slice(0, 10);
 
     // Create chart data for each day of the week
     const daysOfWeek = [

@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   ShieldAlert,
   XCircle,
+  Trophy,
 } from "lucide-react";
 import { getUserSubmissions, getUserTotalScreenTime } from "../api";
 import {
@@ -29,7 +30,7 @@ import {
   Tooltip,
 } from "recharts";
 import ScrollToTopOnMount from "../components/ScrollToTop";
-
+import RankCard from "../components/RankCard";
 interface DashboardProps {
   user: any;
 }
@@ -91,7 +92,9 @@ export default function Dashboard({ user }: DashboardProps) {
 
   const fetchUserStatus = async () => {
     try {
-      const res = await fetch(`/api/admin/user-status/${user.id}`);
+      const res = await fetch(
+        `http://localhost:5000/api/admin/user-status/${user.id}`
+      );
       const data = await res.json();
       if (data.success) setUserStatus(data.data);
     } catch (error) {
@@ -168,6 +171,8 @@ export default function Dashboard({ user }: DashboardProps) {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
         >
+          {/* Add the new RankCard */}
+          <RankCard user={user} />
           <StatusCard
             icon={<Activity className="w-5 h-5 text-blue-600" />}
             bg="bg-blue-50"

@@ -13,8 +13,11 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    // Simple validation - in a real app, this would be done server-side
-    if (username === "admin" && password === "admin123") {
+    if (
+      username === "SYC_Admin" &&
+      password ===
+        "$2b$12$Gie1a3.gq4t2tI1.dE9zpOwJg/O2p6L4JqJ4kK8s6K8kL2lI9mJ8m"
+    ) {
       setIsLoggingIn(true);
       localStorage.setItem(
         "adminSession",
@@ -115,11 +118,6 @@ export default function AdminLogin() {
             </form>
           </div>
         </div>
-
-        {/* Helper Text */}
-        <p className="text-xs text-slate-400 text-center mt-6">
-          For demo purposes: admin / admin123
-        </p>
       </div>
     </div>
   );

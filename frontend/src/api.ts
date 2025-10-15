@@ -58,4 +58,9 @@ export const loginUser = async (credentials: any) => {
   return response.data;
 };
 
+export const getUserRank = async (userId: string) => {
+  const response = await api.get(`/rankings/${userId}`);
+  return response.data;
+};
+
 export default api;
