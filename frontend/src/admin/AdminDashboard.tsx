@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardFooter,
   CardTitle,
 } from "../components/ui/card";
 import {
@@ -20,6 +21,8 @@ import {
   TrendingUp,
   AlertTriangle,
   XCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   getAdminUsers,
@@ -37,6 +40,7 @@ import {
   BarChart,
   Bar,
   Legend,
+  Cell,
 } from "recharts";
 
 type ActiveTab = "users" | "standings";
@@ -118,24 +122,70 @@ export default function AdminDashboard() {
         ]);
 
       if (usersRes.success) {
-        // Sort users: active users first, then disqualified users
         const sortedUsers = [...usersRes.data].sort((a, b) => {
           if (a.disqualified && !b.disqualified) return 1;
           if (!a.disqualified && b.disqualified) return -1;
           return 0;
         });
         setUsers(sortedUsers);
+
+        // Merge disqualification status into daily standings
+        if (dailyRes.success) {
+          const dailyWithDisqualification = dailyRes.data.map(
+            (standing: StandingData) => {
+              const user = usersRes.data.find(
+                (u: UserData) => u._id === standing._id
+              );
+              return {
+                ...standing,
+                disqualified: user?.disqualified || false,
+              };
+            }
+          );
+          setDailyStandings(dailyWithDisqualification);
+        }
+
+        // Merge disqualification status into overall standings
+        if (overallRes.success) {
+          const overallWithDisqualification = overallRes.data.map(
+            (standing: StandingData) => {
+              const user = usersRes.data.find(
+                (u: UserData) => u._id === standing._id
+              );
+              return {
+                ...standing,
+                disqualified: user?.disqualified || false,
+              };
+            }
+          );
+          const sorted = overallWithDisqualification.sort(
+            (a: StandingData, b: StandingData) =>
+              a.totalMinutes - b.totalMinutes
+          );
+          setOverallStandings(sorted);
+        }
+
+        // Merge disqualification status into weekly data
+        if (weeklyRes.success) {
+          const weeklyUsersWithDisqualification = weeklyRes.data.users.map(
+            (weeklyUser: any) => {
+              const user = usersRes.data.find(
+                (u: UserData) => u._id === weeklyUser._id
+              );
+              return {
+                ...weeklyUser,
+                disqualified: user?.disqualified || false,
+              };
+            }
+          );
+          setWeeklyData({
+            ...weeklyRes.data,
+            users: weeklyUsersWithDisqualification,
+          });
+        }
       }
-      if (dailyRes.success) setDailyStandings(dailyRes.data);
-      if (overallRes.success) {
-        const sorted = overallRes.data.sort(
-          (a: StandingData, b: StandingData) => a.totalMinutes - b.totalMinutes
-        );
-        setOverallStandings(sorted);
-      }
-      if (weeklyRes.success) setWeeklyData(weeklyRes.data);
+
       if (statsRes.success) {
-        // Calculate disqualified users count
         const disqualifiedCount = usersRes.data.filter(
           (u: UserData) => u.disqualified
         ).length;
@@ -196,7 +246,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2"
           >
-            <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            <span className="text-xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               Admin Dashboard
             </span>
           </motion.div>
@@ -267,7 +317,7 @@ export default function AdminDashboard() {
         <motion.header
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white/80 backdrop-blur-lg shadow-sm border-b border-green-200/50"
+          className="bg-white/80 backdrop-blur-lg shadow-sm border-b border-green-200/50 rounded-lg mx-4 mt-6 my-4"
         >
           <div className="flex items-center justify-between h-15.5 px-6">
             <div className="flex items-center gap-4">
@@ -277,7 +327,7 @@ export default function AdminDashboard() {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                 {activeTab === "users" ? "Total Users" : "Standings"}
               </h1>
             </div>
@@ -351,7 +401,7 @@ export default function AdminDashboard() {
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ delay: stat.delay + 0.2 }}
-                                className={`text-3xl font-bold mt-1 ${
+                                className={`text-3xl font-semibold mt-1 ${
                                   stat.label === "Disqualified Users"
                                     ? "text-red-600"
                                     : "text-gray-900"
@@ -402,6 +452,22 @@ export default function AdminDashboard() {
 }
 
 function UsersView({ users }: { users: UserData[] }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
+
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  const goToNextPage = () => {
+    setCurrentPage((page) => Math.min(page + 1, totalPages));
+  };
+
+  const goToPreviousPage = () => {
+    setCurrentPage((page) => Math.max(page - 1, 1));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -454,7 +520,7 @@ function UsersView({ users }: { users: UserData[] }) {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user, index) => (
+                {currentUsers.map((user, index) => (
                   <motion.tr
                     key={user._id}
                     initial={{ opacity: 0, x: -20 }}
@@ -473,7 +539,7 @@ function UsersView({ users }: { users: UserData[] }) {
                           animate={{ scale: 1 }}
                           className="flex items-center gap-1"
                         >
-                          <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold border border-red-300">
+                          <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold border border-red-300">
                             <XCircle className="w-3 h-3" />
                             DISQUALIFIED
                           </span>
@@ -536,6 +602,37 @@ function UsersView({ users }: { users: UserData[] }) {
             </table>
           </div>
         </CardContent>
+
+        {totalPages > 1 && (
+          <CardFooter className="flex items-center justify-between pt-4 border-t border-green-100">
+            <span className="text-sm text-gray-600">
+              Page{" "}
+              <span className="font-semibold text-gray-800">{currentPage}</span>{" "}
+              of{" "}
+              <span className="font-semibold text-gray-800">{totalPages}</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </CardFooter>
+        )}
       </Card>
     </motion.div>
   );
@@ -561,7 +658,10 @@ function StandingsView({
   ];
 
   const groupedBarChartData = weeklyData?.users.map((user: any) => {
-    const userData: { [key: string]: any } = { name: user.name };
+    const userData: { [key: string]: any } = {
+      name: user.name,
+      disqualified: user.disqualified || false,
+    };
     weeklyData.chartData.forEach((dayData: any) => {
       const hours = dayData[user.name] || 0;
       userData[dayData.day] = Math.round(hours * 60) || 0;
@@ -603,6 +703,7 @@ function StandingsView({
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                       barGap={2}
                       barCategoryGap="15%"
+                      barSize={10}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -619,47 +720,77 @@ function StandingsView({
                       <YAxis
                         dataKey="name"
                         type="category"
-                        width={100}
-                        tick={{
-                          fill: "#475569",
-                          fontSize: 13,
-                          fontWeight: 500,
+                        width={120}
+                        tick={(props) => {
+                          const { x, y, payload } = props;
+                          const user = groupedBarChartData.find(
+                            (u: any) => u.name === payload.value
+                          );
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill={user?.disqualified ? "#dc2626" : "#475569"}
+                              fontSize={13}
+                              fontWeight={500}
+                              textAnchor="end"
+                              dy={4}
+                            >
+                              {payload.value}
+                              {user?.disqualified && " ❌"}
+                            </text>
+                          );
                         }}
                         axisLine={{ stroke: "#e2e8f0" }}
                         tickLine={false}
                       />
                       <Tooltip
-                        contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.98)",
-                          border: "1px solid #e2e8f0",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                          padding: "12px",
-                        }}
-                        labelStyle={{
-                          color: "#1e293b",
-                          fontWeight: 600,
-                          marginBottom: "4px",
-                        }}
-                        itemStyle={{
-                          color: "#475569",
-                          fontSize: "13px",
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const userData = groupedBarChartData.find(
+                              (u: any) => u.name === label
+                            );
+                            return (
+                              <div
+                                className={`p-4 border rounded-lg shadow-lg ${
+                                  userData?.disqualified
+                                    ? "bg-red-50 border-red-200"
+                                    : "bg-white border-gray-200"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <p className="font-semibold text-gray-900">
+                                    {label}
+                                  </p>
+                                  {userData?.disqualified && (
+                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
+                                      <XCircle className="w-3 h-3" />
+                                      DISQUALIFIED
+                                    </span>
+                                  )}
+                                </div>
+                                {payload.map((entry: any, index: number) => (
+                                  <p
+                                    key={index}
+                                    className="text-sm text-gray-600"
+                                    style={{ color: entry.fill }}
+                                  >
+                                    {entry.name}: {entry.value} mins
+                                  </p>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return null;
                         }}
                       />
-                      <Legend
-                        wrapperStyle={{
-                          paddingTop: "20px",
-                        }}
-                        iconType="circle"
-                        iconSize={8}
-                      />
-                      {daysOfWeek.map((day: string, index: number) => (
+                      {daysOfWeek.map((day: any, idx: number) => (
                         <Bar
                           key={day}
                           dataKey={day}
-                          fill={barColors[index % barColors.length]}
-                          radius={[0, 4, 4, 0]}
-                          maxBarSize={32}
+                          name={day}
+                          stackId="a"
+                          fill={barColors[idx % barColors.length]}
                         />
                       ))}
                     </BarChart>
@@ -698,31 +829,53 @@ function StandingsView({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300`}
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 ${
+                      user.disqualified
+                        ? "bg-red-50/80 border-red-200 hover:border-red-300"
+                        : "bg-white/80 border-green-100 hover:border-green-300"
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <motion.div
                         whileHover={{ scale: 1.2 }}
                         transition={{ duration: 0.5 }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
-                          index === 0
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white shadow-lg ${
+                          user.disqualified
+                            ? "bg-gradient-to-br from-red-400 to-red-600"
+                            : index === 0
                             ? "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400"
                             : "bg-gradient-to-br from-gray-400 via-gray-600 to-gray-500"
                         }`}
                       >
-                        {index + 1}
+                        {user.disqualified ? (
+                          <XCircle className="w-5 h-5" />
+                        ) : (
+                          index + 1
+                        )}
                       </motion.div>
                       <div>
-                        <p className="font-semibold text-gray-900">
-                          {user.name}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-gray-900">
+                            {user.name}
+                          </p>
+                          {user.disqualified && (
+                            <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
+                              <XCircle className="w-3 h-3" />
+                              DISQUALIFIED
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-600">
                           Adm No: {user.admNo} | Year: {user.year}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-900 text-lg">
+                      <p
+                        className={`font-semibold text-lg ${
+                          user.disqualified ? "text-red-600" : "text-gray-900"
+                        }`}
+                      >
                         {user.totalMinutes} mins
                       </p>
                       <p className="text-sm text-gray-600">
@@ -774,7 +927,7 @@ function StandingsView({
                       <motion.div
                         whileHover={{ scale: 1.2 }}
                         transition={{ duration: 0.5 }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white shadow-lg ${
                           user.disqualified
                             ? "bg-gradient-to-br from-red-400 to-red-600"
                             : index === 0
@@ -794,7 +947,7 @@ function StandingsView({
                             {user.name}
                           </p>
                           {user.disqualified && (
-                            <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold border border-red-300">
+                            <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
                               <XCircle className="w-3 h-3" />
                               DISQUALIFIED
                             </span>
@@ -807,7 +960,7 @@ function StandingsView({
                     </div>
                     <div className="text-right">
                       <p
-                        className={`font-bold text-lg ${
+                        className={`font-semibold text-lg ${
                           user.disqualified ? "text-red-600" : "text-gray-900"
                         }`}
                       >
@@ -877,7 +1030,7 @@ function StandingsView({
                     <YAxis
                       dataKey="name"
                       type="category"
-                      width={100}
+                      width={120}
                       interval={0}
                       tick={(props) => {
                         const { x, y, payload } = props;
@@ -919,7 +1072,7 @@ function StandingsView({
                                   {label}
                                 </p>
                                 {data.disqualified && (
-                                  <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold border border-red-300">
+                                  <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
                                     <XCircle className="w-3 h-3" />
                                     DISQUALIFIED
                                   </span>
@@ -946,28 +1099,20 @@ function StandingsView({
                     />
                     <Bar
                       dataKey="totalMinutes"
-                      fill="url(#colorGradient)"
                       radius={[0, 6, 6, 0]}
                       maxBarSize={40}
-                      shape={(props: any) => {
-                        const { x, y, width, height, payload } = props;
-                        const isDisqualified = payload.disqualified;
-                        return (
-                          <rect
-                            x={x}
-                            y={y}
-                            width={width}
-                            height={height}
-                            fill={
-                              isDisqualified
-                                ? "url(#disqualifiedGradient)"
-                                : "url(#colorGradient)"
-                            }
-                            rx={6}
-                          />
-                        );
-                      }}
-                    />
+                    >
+                      {overallStandings.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            entry.disqualified
+                              ? "url(#disqualifiedGradient)"
+                              : "url(#colorGradient)"
+                          }
+                        />
+                      ))}
+                    </Bar>
                     <defs>
                       <linearGradient
                         id="colorGradient"
