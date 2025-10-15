@@ -240,11 +240,11 @@ export default function AdminDashboard() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 border-r border-green-200/50`}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b border-green-200/50 bg-gradient-to-r from-green-50 to-emerald-50">
+        <div className="flex items-center justify-between h-16 px-6 border-b border-green-200/50 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl mx-2 my-2">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-lg p-2"
           >
             <span className="text-xl font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               Admin Dashboard
