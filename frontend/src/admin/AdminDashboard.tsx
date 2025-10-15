@@ -10,7 +10,6 @@ import {
 } from "../components/ui/card";
 import {
   LogOut,
-  Shield,
   Users,
   Trophy,
   BarChart3,
@@ -19,6 +18,8 @@ import {
   Award,
   Clock,
   TrendingUp,
+  AlertTriangle,
+  XCircle,
 } from "lucide-react";
 import {
   getAdminUsers,
@@ -51,6 +52,10 @@ interface UserData {
   totalScreenTime: number;
   screenTimeSubmissions: any[];
   createdAt: string;
+  disqualified?: boolean;
+  missedSubmissions?: number;
+  limitExceedCount?: number;
+  consecutiveLimitExceeded?: boolean;
 }
 
 interface StandingData {
@@ -62,6 +67,7 @@ interface StandingData {
   totalHours: number;
   submissionsCount: number;
   lastSubmission: string | null;
+  disqualified?: boolean;
 }
 
 interface AdminStats {
@@ -69,6 +75,7 @@ interface AdminStats {
   totalSubmissions: number;
   usersWithSubmissions: number;
   todaySubmissions: number;
+  disqualifiedUsers?: number;
 }
 
 export default function AdminDashboard() {
@@ -110,7 +117,15 @@ export default function AdminDashboard() {
           getAdminStats(),
         ]);
 
-      if (usersRes.success) setUsers(usersRes.data);
+      if (usersRes.success) {
+        // Sort users: active users first, then disqualified users
+        const sortedUsers = [...usersRes.data].sort((a, b) => {
+          if (a.disqualified && !b.disqualified) return 1;
+          if (!a.disqualified && b.disqualified) return -1;
+          return 0;
+        });
+        setUsers(sortedUsers);
+      }
       if (dailyRes.success) setDailyStandings(dailyRes.data);
       if (overallRes.success) {
         const sorted = overallRes.data.sort(
@@ -119,7 +134,16 @@ export default function AdminDashboard() {
         setOverallStandings(sorted);
       }
       if (weeklyRes.success) setWeeklyData(weeklyRes.data);
-      if (statsRes.success) setStats(statsRes.data);
+      if (statsRes.success) {
+        // Calculate disqualified users count
+        const disqualifiedCount = usersRes.data.filter(
+          (u: UserData) => u.disqualified
+        ).length;
+        setStats({
+          ...statsRes.data,
+          disqualifiedUsers: disqualifiedCount,
+        });
+      }
     } catch (error) {
       console.error("Error fetching admin data:", error);
     } finally {
@@ -280,19 +304,25 @@ export default function AdminDashboard() {
                       color: "blue",
                       delay: 0,
                     },
-
                     {
                       label: "Total Submissions",
                       value: stats.totalSubmissions,
                       icon: BarChart3,
                       color: "purple",
-                      delay: 0.2,
+                      delay: 0.1,
                     },
                     {
                       label: "Today's Submissions",
                       value: stats.todaySubmissions,
                       icon: Clock,
                       color: "orange",
+                      delay: 0.2,
+                    },
+                    {
+                      label: "Disqualified Users",
+                      value: stats.disqualifiedUsers || 0,
+                      icon: XCircle,
+                      color: "red",
                       delay: 0.3,
                     },
                   ].map((stat) => (
@@ -304,7 +334,13 @@ export default function AdminDashboard() {
                       whileHover={{ y: -5, scale: 1.02 }}
                       style={{ transformStyle: "preserve-3d" }}
                     >
-                      <Card className="border-2 border-transparent hover:border-green-200 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
+                      <Card
+                        className={`border-2 ${
+                          stat.label === "Disqualified Users"
+                            ? "border-red-200 hover:border-red-300"
+                            : "border-transparent hover:border-green-200"
+                        } shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-sm`}
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div>
@@ -315,18 +351,30 @@ export default function AdminDashboard() {
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ delay: stat.delay + 0.2 }}
-                                className="text-3xl font-bold text-gray-900 mt-1"
+                                className={`text-3xl font-bold mt-1 ${
+                                  stat.label === "Disqualified Users"
+                                    ? "text-red-600"
+                                    : "text-gray-900"
+                                }`}
                               >
                                 {stat.value}
                               </motion.p>
                             </div>
                             <motion.div
-                              whileHover={{ scale: 1.2 }}
-                              transition={{ duration: 0.5 }}
-                              className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-100 to-${stat.color}-200 rounded-xl flex items-center justify-center shadow-md`}
+                              whileHover={{ scale: 1.2, rotate: 5 }}
+                              transition={{ duration: 0.3 }}
+                              className={`w-12 h-12 ${
+                                stat.label === "Disqualified Users"
+                                  ? "bg-gradient-to-br from-red-100 to-red-200"
+                                  : `bg-gradient-to-br from-${stat.color}-100 to-${stat.color}-200`
+                              } rounded-xl flex items-center justify-center shadow-md`}
                             >
                               <stat.icon
-                                className={`w-6 h-6 text-${stat.color}-600`}
+                                className={`w-6 h-6 ${
+                                  stat.label === "Disqualified Users"
+                                    ? "text-red-600"
+                                    : `text-${stat.color}-600`
+                                }`}
                               />
                             </motion.div>
                           </div>
@@ -374,6 +422,9 @@ function UsersView({ users }: { users: UserData[] }) {
               <thead>
                 <tr className="border-b-2 border-green-100">
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                    Status
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">
                     Name
                   </th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">
@@ -395,6 +446,9 @@ function UsersView({ users }: { users: UserData[] }) {
                     Submissions
                   </th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                    Limit Exceeds
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">
                     Joined
                   </th>
                 </tr>
@@ -406,26 +460,74 @@ function UsersView({ users }: { users: UserData[] }) {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="border-b hover:bg-green-50/50 transition-colors"
+                    className={`border-b transition-all duration-300 ${
+                      user.disqualified
+                        ? "bg-red-50/70 hover:bg-red-100/70 border-red-200"
+                        : "hover:bg-green-50/50"
+                    }`}
                   >
+                    <td className="py-3 px-4">
+                      {user.disqualified ? (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="flex items-center gap-1"
+                        >
+                          <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold border border-red-300">
+                            <XCircle className="w-3 h-3" />
+                            DISQUALIFIED
+                          </span>
+                        </motion.div>
+                      ) : user.consecutiveLimitExceeded ? (
+                        <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold border border-yellow-300">
+                          <AlertTriangle className="w-3 h-3" />
+                          WARNING
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
+                          Active
+                        </span>
+                      )}
+                    </td>
                     <td className="py-3 px-4 font-medium text-gray-900">
                       {user.name}
                     </td>
                     <td className="py-3 px-4 text-gray-600">{user.admNo}</td>
                     <td className="py-3 px-4 text-gray-600">{user.year}</td>
-                    <td className="py-3 px-4 text-gray-600">{user.email}</td>
+                    <td className="py-3 px-4 text-gray-600 text-sm">
+                      {user.email}
+                    </td>
                     <td className="py-3 px-4 text-gray-600">
                       {user.whatsappNumber}
                     </td>
                     <td className="py-3 px-4 text-gray-600">
-                      <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm font-medium">
-                        {user.totalScreenTime}mins
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm font-medium ${
+                          user.disqualified
+                            ? "bg-red-100 text-red-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {user.totalScreenTime} mins
                       </span>
                     </td>
                     <td className="py-3 px-4 text-gray-600">
                       {user.screenTimeSubmissions?.length || 0}
                     </td>
-                    <td className="py-3 px-4 text-gray-600">
+                    <td className="py-3 px-4">
+                      <span
+                        className={`px-2 py-1 rounded-full text-sm font-medium ${
+                          (user.limitExceedCount || 0) >= 3
+                            ? "bg-red-100 text-red-700"
+                            : (user.limitExceedCount || 0) >= 1
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {user.limitExceedCount || 0}/3
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-600 text-sm">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                   </motion.tr>
@@ -596,8 +698,7 @@ function StandingsView({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300
-                    `}
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300`}
                   >
                     <div className="flex items-center gap-4">
                       <motion.div
@@ -605,7 +706,7 @@ function StandingsView({
                         transition={{ duration: 0.5 }}
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
                           index === 0
-                            ? "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400 "
+                            ? "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-400"
                             : "bg-gradient-to-br from-gray-400 via-gray-600 to-gray-500"
                         }`}
                       >
@@ -663,7 +764,10 @@ function StandingsView({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     whileHover={{ scale: 1.02, x: 5 }}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 bg-white/80 border-green-100 hover:border-green-300
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 shadow-md transition-all duration-300 ${
+                      user.disqualified
+                        ? "bg-red-50/80 border-red-200 hover:border-red-300"
+                        : "bg-white/80 border-green-100 hover:border-green-300"
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -671,24 +775,42 @@ function StandingsView({
                         whileHover={{ scale: 1.2 }}
                         transition={{ duration: 0.5 }}
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg ${
-                          index === 0
+                          user.disqualified
+                            ? "bg-gradient-to-br from-red-400 to-red-600"
+                            : index === 0
                             ? "bg-gradient-to-br from-yellow-400 to-yellow-600"
                             : "bg-gradient-to-br from-gray-400 via-gray-600 to-gray-500"
                         }`}
                       >
-                        {index + 1}
+                        {user.disqualified ? (
+                          <XCircle className="w-5 h-5" />
+                        ) : (
+                          index + 1
+                        )}
                       </motion.div>
                       <div>
-                        <p className="font-semibold text-gray-900">
-                          {user.name}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-gray-900">
+                            {user.name}
+                          </p>
+                          {user.disqualified && (
+                            <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold border border-red-300">
+                              <XCircle className="w-3 h-3" />
+                              DISQUALIFIED
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-600">
                           Adm No: {user.admNo} | Year: {user.year}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-900 text-lg">
+                      <p
+                        className={`font-bold text-lg ${
+                          user.disqualified ? "text-red-600" : "text-gray-900"
+                        }`}
+                      >
                         {user.totalMinutes} mins
                       </p>
                       <p className="text-sm text-gray-600">
@@ -712,7 +834,7 @@ function StandingsView({
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-gray-800 text-lg font-semibold">
               <TrendingUp className="w-5 h-5 text-gray-600" />
-              Overall Standings
+              Overall Standings Chart
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -757,7 +879,26 @@ function StandingsView({
                       type="category"
                       width={100}
                       interval={0}
-                      tick={{ fill: "#475569", fontSize: 13, fontWeight: 500 }}
+                      tick={(props) => {
+                        const { x, y, payload } = props;
+                        const user = overallStandings.find(
+                          (u) => u.name === payload.value
+                        );
+                        return (
+                          <text
+                            x={x}
+                            y={y}
+                            fill={user?.disqualified ? "#dc2626" : "#475569"}
+                            fontSize={13}
+                            fontWeight={500}
+                            textAnchor="end"
+                            dy={4}
+                          >
+                            {payload.value}
+                            {user?.disqualified && " ❌"}
+                          </text>
+                        );
+                      }}
                       axisLine={{ stroke: "#e2e8f0" }}
                       tickLine={false}
                     />
@@ -766,11 +907,31 @@ function StandingsView({
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
-                              <p className="font-semibold text-gray-900 mb-2">
-                                {label}
-                              </p>
-                              <p className="text-emerald-600 font-medium mb-1">
+                            <div
+                              className={`p-4 border rounded-lg shadow-lg ${
+                                data.disqualified
+                                  ? "bg-red-50 border-red-200"
+                                  : "bg-white border-gray-200"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <p className="font-semibold text-gray-900">
+                                  {label}
+                                </p>
+                                {data.disqualified && (
+                                  <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold border border-red-300">
+                                    <XCircle className="w-3 h-3" />
+                                    DISQUALIFIED
+                                  </span>
+                                )}
+                              </div>
+                              <p
+                                className={`font-medium mb-1 ${
+                                  data.disqualified
+                                    ? "text-red-600"
+                                    : "text-emerald-600"
+                                }`}
+                              >
                                 Total Screen Time: {data.totalMinutes} mins
                               </p>
                               <p className="text-sm text-gray-600">
@@ -788,6 +949,24 @@ function StandingsView({
                       fill="url(#colorGradient)"
                       radius={[0, 6, 6, 0]}
                       maxBarSize={40}
+                      shape={(props: any) => {
+                        const { x, y, width, height, payload } = props;
+                        const isDisqualified = payload.disqualified;
+                        return (
+                          <rect
+                            x={x}
+                            y={y}
+                            width={width}
+                            height={height}
+                            fill={
+                              isDisqualified
+                                ? "url(#disqualifiedGradient)"
+                                : "url(#colorGradient)"
+                            }
+                            rx={6}
+                          />
+                        );
+                      }}
                     />
                     <defs>
                       <linearGradient
@@ -805,6 +984,24 @@ function StandingsView({
                         <stop
                           offset="100%"
                           stopColor="#059669"
+                          stopOpacity={0.9}
+                        />
+                      </linearGradient>
+                      <linearGradient
+                        id="disqualifiedGradient"
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="0"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#ef4444"
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#dc2626"
                           stopOpacity={0.9}
                         />
                       </linearGradient>

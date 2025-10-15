@@ -46,7 +46,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     consecutiveLimitExceeded: { type: Boolean, default: false },
-    limitExceedCount: { type: Number, default: 0, max: 3 },
+    limitExceedCount: { type: Number, default: 0 },
+    disqualified: { type: Boolean, default: false },
+    missedSubmissions: { type: Number, default: 0 },
+    lastSubmissionDate: { type: Date, default: null },
+
     screenTimeSubmissions: [
       {
         uploadId: {

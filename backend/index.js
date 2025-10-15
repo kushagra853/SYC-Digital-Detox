@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { ocrService } from "./services/ocrService.js";
+import "./jobs/checkMissedSubmissions.js";
 
 dotenv.config();
 const app = express();

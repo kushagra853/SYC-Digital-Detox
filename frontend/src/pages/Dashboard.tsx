@@ -13,20 +13,20 @@ import {
   Clock,
   Target,
   Award,
-  Users,
   Activity,
+  AlertTriangle,
+  ShieldAlert,
+  XCircle,
 } from "lucide-react";
 import { getUserSubmissions, getUserTotalScreenTime } from "../api";
 import {
-  LineChart,
-  Line,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
 } from "recharts";
 import ScrollToTopOnMount from "../components/ScrollToTop";
 
@@ -42,6 +42,13 @@ interface SubmissionData {
   date: string;
 }
 
+interface UserStatus {
+  missedSubmissions: number;
+  limitExceedCount: number;
+  consecutiveLimitExceeded: boolean;
+  disqualified: boolean;
+}
+
 export default function Dashboard({ user }: DashboardProps) {
   const [submissions, setSubmissions] = useState<SubmissionData[]>([]);
   const [totalScreenTime, setTotalScreenTime] = useState({
@@ -49,20 +56,25 @@ export default function Dashboard({ user }: DashboardProps) {
     totalScreenTimeHours: 0,
     totalSubmissions: 0,
   });
+  const [userStatus, setUserStatus] = useState<UserStatus>({
+    missedSubmissions: 0,
+    limitExceedCount: 0,
+    consecutiveLimitExceeded: false,
+    disqualified: false,
+  });
 
   useEffect(() => {
     if (user) {
       fetchUserSubmissions();
       fetchUserTotalScreenTime();
+      fetchUserStatus();
     }
   }, [user]);
 
   const fetchUserSubmissions = async () => {
     try {
       const response = await getUserSubmissions(user.id);
-      if (response.success) {
-        setSubmissions(response.data);
-      }
+      if (response.success) setSubmissions(response.data);
     } catch (error) {
       console.error("Error fetching submissions:", error);
     }
@@ -71,82 +83,71 @@ export default function Dashboard({ user }: DashboardProps) {
   const fetchUserTotalScreenTime = async () => {
     try {
       const response = await getUserTotalScreenTime(user.id);
-      if (response.success) {
-        setTotalScreenTime(response.data);
-      }
+      if (response.success) setTotalScreenTime(response.data);
     } catch (error) {
       console.error("Error fetching total screen time:", error);
+    }
+  };
+
+  const fetchUserStatus = async () => {
+    try {
+      const res = await fetch(`/api/admin/user-status/${user.id}`);
+      const data = await res.json();
+      if (data.success) setUserStatus(data.data);
+    } catch (error) {
+      console.error("Error fetching user status:", error);
     }
   };
 
   const handleUploadComplete = () => {
     fetchUserSubmissions();
     fetchUserTotalScreenTime();
+    fetchUserStatus();
   };
 
   const calculateStreak = () => {
     if (submissions.length === 0) return 0;
-
-    const sortedSubmissions = [...submissions].sort(
+    const sorted = [...submissions].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-
-    let currentStreak = 0;
+    let streak = 0;
     const today = new Date();
     let checkDate = new Date(today);
-
-    for (let i = 0; i < sortedSubmissions.length; i++) {
-      const submissionDate = new Date(sortedSubmissions[i].date);
-      const dateStr = checkDate.toISOString().split("T")[0];
-      const submissionDateStr = submissionDate.toISOString().split("T")[0];
-
-      if (dateStr === submissionDateStr) {
-        currentStreak++;
+    for (let i = 0; i < sorted.length; i++) {
+      const sDate = new Date(sorted[i].date);
+      if (checkDate.toDateString() === sDate.toDateString()) {
+        streak++;
         checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
-      }
+      } else break;
     }
-
-    return currentStreak;
+    return streak;
   };
 
   const processChartData = () => {
     if (submissions.length === 0) return [];
-
-    const sortedSubmissions = [...submissions].sort(
+    const sorted = [...submissions].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-
-    const dailyData: { [key: string]: number } = {};
-
-    sortedSubmissions.forEach((submission) => {
-      const date = new Date(submission.date).toISOString().split("T")[0];
-      if (dailyData[date]) {
-        dailyData[date] += submission.totalMinutes;
-      } else {
-        dailyData[date] = submission.totalMinutes;
-      }
+    const daily: Record<string, number> = {};
+    sorted.forEach((s) => {
+      const date = new Date(s.date).toISOString().split("T")[0];
+      daily[date] = (daily[date] || 0) + s.totalMinutes;
     });
-
-    return Object.entries(dailyData).map(([date, totalMinutes]) => ({
+    return Object.entries(daily).map(([date, totalMinutes]) => ({
       date: new Date(date).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      fullDate: date,
-      screenTime: (totalMinutes / 60).toFixed(1),
-      totalMinutes: totalMinutes,
+      totalMinutes,
     }));
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-US", {
       weekday: "long",
       month: "short",
       day: "numeric",
     });
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
@@ -161,81 +162,52 @@ export default function Dashboard({ user }: DashboardProps) {
             Welcome back, {user?.name || "User"}
           </h1>
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
         >
-          <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 text-xs font-medium mb-1">
-                      Total Reports
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {submissions.length}
-                    </p>
-                  </div>
-                  <div className="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 text-xs font-medium mb-1">
-                      Current Streak
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {submissions.length > 0 ? calculateStreak() : 0} days
-                    </p>
-                  </div>
-                  <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center">
-                    <Award className="w-5 h-5 text-amber-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 text-xs font-medium mb-1">
-                      Total Screen Time
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {totalScreenTime.totalScreenTimeMinutes} mins
-                    </p>
-                  </div>
-                  <div className="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-indigo-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <StatusCard
+            icon={<Activity className="w-5 h-5 text-blue-600" />}
+            bg="bg-blue-50"
+            label="Total Reports"
+            value={submissions.length.toString()}
+          />
+          <StatusCard
+            icon={<Award className="w-5 h-5 text-amber-600" />}
+            bg="bg-amber-50"
+            label="Current Streak"
+            value={`${calculateStreak()} days`}
+          />
+          <StatusCard
+            icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
+            bg="bg-red-50"
+            label="Missed Submissions"
+            value={userStatus.missedSubmissions.toString()}
+          />
+          <StatusCard
+            icon={<Target className="w-5 h-5 text-indigo-600" />}
+            bg="bg-indigo-50"
+            label="Over 2hr Reports"
+            value={`${userStatus.limitExceedCount}${
+              userStatus.consecutiveLimitExceeded ? " (Consecutive)" : ""
+            }`}
+          />
+          <StatusCard
+            icon={
+              userStatus.disqualified ? (
+                <XCircle className="w-5 h-5 text-red-600" />
+              ) : (
+                <ShieldAlert className="w-5 h-5 text-emerald-600" />
+              )
+            }
+            bg={userStatus.disqualified ? "bg-red-50" : "bg-emerald-50"}
+            label="Status"
+            value={
+              userStatus.disqualified ? "Disqualified" : "Active Participant"
+            }
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -462,3 +434,36 @@ export default function Dashboard({ user }: DashboardProps) {
     </div>
   );
 }
+
+const StatusCard = ({
+  icon,
+  bg,
+  label,
+  value,
+}: {
+  icon: JSX.Element;
+  bg: string;
+  label: string;
+  value: string;
+}) => (
+  <motion.div
+    whileHover={{ y: -4, scale: 1.02 }}
+    transition={{ type: "spring", stiffness: 300 }}
+  >
+    <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
+      <CardContent className="p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-500 text-xs font-medium mb-1">{label}</p>
+            <p className="text-2xl font-semibold text-gray-800">{value}</p>
+          </div>
+          <div
+            className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center`}
+          >
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </motion.div>
+);

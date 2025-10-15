@@ -299,4 +299,43 @@ router.get("/stats", async (req, res) => {
   }
 });
 
+router.get("/user-status/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select(
+      "missedSubmissions limitExceedCount consecutiveLimitExceeded disqualified name email"
+    );
+    if (!user)
+      return res.status(404).json({ success: false, error: "User not found" });
+
+    res.json({ success: true, data: user });
+  } catch (err) {
+    console.error("Error fetching user status:", err);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+});
+
+router.post("/reset-user/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user)
+      return res.status(404).json({ success: false, error: "User not found" });
+
+    user.disqualified = false;
+    user.limitExceedCount = 0;
+    user.consecutiveLimitExceeded = false;
+    user.missedSubmissions = 0;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `✅ User ${user.name} reinstated successfully.`,
+      data: user,
+    });
+  } catch (err) {
+    console.error("Error resetting user:", err);
+    res.status(500).json({ success: false, error: "Failed to reset user" });
+  }
+});
+
 export default router;

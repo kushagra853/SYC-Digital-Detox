@@ -65,34 +65,49 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <h3 className="text-green-300 mb-4">Contact</h3>
+            <h3 className="text-green-300 font-semibold mb-4">Contact</h3>
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                <span>ABESEC, Ghaziabad</span>
+                <span className="leading-relaxed">ABESEC, Ghaziabad</span>
               </li>
 
-              <li>
+              <li className="space-y-2">
                 <div className="flex items-start gap-2">
                   <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                  <div>
-                    <p>Ms. Aditi Karn</p>
-                    <p className="text-xs text-gray-400">(General Secretary)</p>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-200">Ms. Aditi Karn</p>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      (General Secretary)
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-2 mt-2 ml-6">
-                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                  <span>+91 80765 99167</span>
+                <div className="flex items-center gap-2 ml-6">
+                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <a
+                    href="tel:+918076599167"
+                    className="hover:text-green-300 transition-colors"
+                  >
+                    +91 80765 99167
+                  </a>
                 </div>
               </li>
-              <li>
+
+              <li className="space-y-2">
                 <div className="flex items-start gap-2">
                   <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                  <span>Mr. Vivek</span>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-200">Mr. Vivek</p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2 mt-2 ml-6">
-                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                  <span>+91 83683 57994</span>
+                <div className="flex items-center gap-2 ml-6">
+                  <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <a
+                    href="tel:+918368357994"
+                    className="hover:text-green-300 transition-colors"
+                  >
+                    +91 83683 57994
+                  </a>
                 </div>
               </li>
             </ul>
