@@ -599,12 +599,6 @@ function LoginForm({
 
   return (
     <>
-      <div className="md:hidden mb-4">
-        <Button variant="ghost" onClick={onBack}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
-      </div>
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-8">
           <AuthToggle isLogin={isLogin} onToggle={onToggleForm} />
