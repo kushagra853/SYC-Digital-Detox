@@ -99,6 +99,7 @@ export default function Home({ user }: HomeProps) {
                   </p>
                   <motion.div
                     whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
                     className="text-center"
                   >
                     <Button
@@ -773,7 +774,7 @@ export default function Home({ user }: HomeProps) {
                 <Trophy className="w-24 h-24 text-white drop-shadow-lg" />
               </motion.div>
 
-              <h2 className="text-4xl md:text-5xl font-bold text-white mt-6">
+              <h2 className="text-4xl md:text-5xl font-semibold text-white mt-6">
                 Ready to Reclaim Your Life?
               </h2>
 
