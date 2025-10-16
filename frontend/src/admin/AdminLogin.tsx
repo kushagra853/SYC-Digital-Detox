@@ -13,7 +13,12 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    if (username === "SYC_Admin" && password === "Placid-Rocket-Jigsaw-42!") {
+    const trimmedPassword = password.trim();
+
+    if (
+      username === "SYC_Admin" &&
+      trimmedPassword === "Placid-Rocket-Jigsaw-42!"
+    ) {
       setIsLoggingIn(true);
       localStorage.setItem(
         "adminSession",
