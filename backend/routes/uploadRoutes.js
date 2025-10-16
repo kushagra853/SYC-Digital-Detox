@@ -44,145 +44,28 @@ const upload = multer({
 });
 
 // POST /api/uploads/extract - Extract screen time and apply rules
-// router.post("/extract", upload.single("image"), async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({
-//         success: false,
-//         error: "No image file provided",
-//       });
-//     }
-
-//     const userId = req.body.userId;
-//     const user = await User.findById(userId);
-
-//     if (!user) {
-//       await fs.unlink(req.file.path);
-//       return res.status(404).json({
-//         success: false,
-//         error: "User not found",
-//       });
-//     }
-
-//     // Disqualified users cannot submit
-//     if (user.disqualified) {
-//       await fs.unlink(req.file.path);
-//       return res.status(403).json({
-//         success: false,
-//         error: "You are disqualified and cannot submit further screenshots.",
-//       });
-//     }
-
-//     // Submission window (10:00 PM – 11:59 PM)
-//     const now = new Date();
-//     const hour = now.getHours();
-//     const minute = now.getMinutes();
-//     if (hour < 22 || hour > 23 || (hour === 23 && minute > 59)) {
-//       await fs.unlink(req.file.path);
-//       return res.status(400).json({
-//         success: false,
-//         error: "Submissions are only allowed between 10:00 PM and 11:59 PM",
-//       });
-//     }
-
-//     // Extract screen time via OCR
-//     const extractedData = await extractScreenTime(req.file.path);
-//     if (!extractedData.success) {
-//       await fs.unlink(req.file.path);
-//       return res.status(400).json({
-//         success: false,
-//         error:
-//           extractedData.error || "Failed to extract screen time from image",
-//       });
-//     }
-
-//     const totalMinutes = extractedData.data.totalMinutes;
-//     const limitExceeded = totalMinutes > 120;
-
-//     // HANDLE LIMIT EXCEED / DISQUALIFICATION LOGIC
-//     if (limitExceeded) {
-//       user.limitExceedCount += 1;
-
-//       if (user.consecutiveLimitExceeded) {
-//         // two consecutive exceeds
-//         user.disqualified = true;
-//       } else if (user.limitExceedCount >= 3) {
-//         // total 3 exceeds
-//         user.disqualified = true;
-//       } else {
-//         // first exceed
-//         user.consecutiveLimitExceeded = true;
-//       }
-//     } else {
-//       // reset consecutive flag if within limit
-//       user.consecutiveLimitExceeded = false;
-//     }
-
-//     if (user.disqualified) {
-//       await user.save();
-//       await fs.unlink(req.file.path);
-//       return res.status(403).json({
-//         success: false,
-//         error:
-//           "You have been disqualified for exceeding the daily limit twice consecutively or 3 times in total.",
-//       });
-//     }
-
-//     //  SAVE UPLOAD
-//     const newUpload = new Upload({
-//       userId: user._id,
-//       imagePath: req.file.filename,
-//       screenTime: extractedData.data.screenTime,
-//       totalMinutes,
-//       date: now,
-//     });
-
-//     await newUpload.save();
-
-//     //  UPDATE USER
-//     user.screenTimeSubmissions.push({
-//       uploadId: newUpload._id,
-//       screenTime: extractedData.data.screenTime,
-//       totalMinutes,
-//       date: now,
-//     });
-//     user.totalScreenTime += totalMinutes;
-//     user.lastSubmissionDate = now;
-//     await user.save();
-
-//     res.json({
-//       success: true,
-//       data: {
-//         id: newUpload._id,
-//         screenTime: extractedData.data.screenTime,
-//         totalMinutes,
-//         date: now,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error processing upload:", error);
-//     if (req.file?.path) {
-//       try {
-//         await fs.unlink(req.file.path);
-//       } catch (unlinkError) {
-//         console.error("Error deleting file:", unlinkError);
-//       }
-//     }
-
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to process image",
-//       message: error.message,
-//     });
-//   }
-// });
-// POST /api/uploads/extract - Extract screen time and apply rules
 router.post("/extract", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
         success: false,
         error: "No image file provided",
+      });
+    }
+
+    // EVENT START DATE CHECK - October 24, 2025, 9:30 PM IST
+    const eventStartDate = new Date("2025-10-24T16:00:00.000Z"); // 9:30 PM IST = 4:00 PM UTC
+    const now = new Date();
+
+    if (now < eventStartDate) {
+      if (req.file?.path) {
+        await fs.unlink(req.file.path);
+      }
+      return res.status(403).json({
+        success: false,
+        error:
+          "Event has not started yet. The challenge begins on October 24, 2025 at 9:30 PM IST.",
+        eventStartsAt: eventStartDate.toISOString(),
       });
     }
 
@@ -206,27 +89,33 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       });
     }
 
-    // Submission window (10:00 PM – 11:59 PM)
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
+    // Submission window (10:00 PM – 11:59 PM IST)
+    // Convert current time to IST (UTC+5:30)
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+    const istTime = new Date(now.getTime() + istOffset);
+    const hour = istTime.getUTCHours();
+    const minute = istTime.getUTCMinutes();
+
     if (hour < 22 || hour > 23 || (hour === 23 && minute > 59)) {
       await fs.unlink(req.file.path);
       return res.status(400).json({
         success: false,
-        error: "Submissions are only allowed between 10:00 PM and 11:59 PM",
+        error: "Submissions are only allowed between 10:00 PM and 11:59 PM IST",
       });
     }
 
-    // Check if user already submitted today
-    const today = new Date(now);
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    // Check if user already submitted today (in IST)
+    const todayIST = new Date(istTime);
+    todayIST.setUTCHours(0, 0, 0, 0);
+    const tomorrowIST = new Date(todayIST);
+    tomorrowIST.setUTCDate(tomorrowIST.getUTCDate() + 1);
 
     const todaySubmission = user.screenTimeSubmissions.find((sub) => {
       const subDate = new Date(sub.date);
-      return subDate >= today && subDate < tomorrow;
+      const subDateIST = new Date(subDate.getTime() + istOffset);
+      const subDayStart = new Date(subDateIST);
+      subDayStart.setUTCHours(0, 0, 0, 0);
+      return subDayStart.getTime() === todayIST.getTime();
     });
 
     if (todaySubmission) {

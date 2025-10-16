@@ -150,23 +150,6 @@ export default function Footer() {
                 <img src={Linkedin} alt="Linkedin" className="w-8 h-8" />
               </motion.a>
             </div>
-
-            {/* <div className="grid grid-cols-2 gap-4">
-              <div className="relative p-2 bg-white rounded-xl shadow-lg transform rotate-3 hover:rotate-6 transition-transform group">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 opacity-20 rounded-xl blur-sm group-hover:opacity-40 transition-opacity" />
-                <div className="relative bg-white p-2 rounded-lg flex flex-col items-center justify-center aspect-square">
-                  
-                </div>
-              </div>
-              <div className="relative p-2 bg-white rounded-xl shadow-lg transform -rotate-3 hover:-rotate-6 transition-transform group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-600 opacity-20 rounded-xl blur-sm group-hover:opacity-40 transition-opacity" />
-                <div className="relative bg-white p-2 rounded-lg flex flex-col items-center justify-center aspect-square">
-                  <div className="w-24 h-24 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                    <img src="/WhatsAppQR.png" alt="WhatsApp QR" />
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </motion.div>
         </div>
 
