@@ -131,7 +131,8 @@ export default function Footer() {
                 <img src={Instagram} alt="Instagram" className="w-8 h-8" />
               </motion.a>
               <motion.a
-                href="#"
+                href="https://chat.whatsapp.com/IWsftEIpf0iErfQo34ho6s?mode=wwc"
+                target="_blank"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"

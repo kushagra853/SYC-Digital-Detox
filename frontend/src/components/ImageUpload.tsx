@@ -80,7 +80,7 @@ export default function ImageUpload({
       formData.append("date", new Date().toISOString());
 
       const response = await fetch(
-        "http://localhost:5000/api/uploads/extract",
+        "https://syc-digital-detox.onrender.com/api/uploads/extract",
         {
           method: "POST",
           body: formData,
@@ -96,7 +96,6 @@ export default function ImageUpload({
         });
         setExtractedData(result.data.extractedData);
 
-        // Update localStorage
         const storedUser = JSON.parse(
           localStorage.getItem("digitalDetoxUser") || "{}"
         );
@@ -105,7 +104,7 @@ export default function ImageUpload({
           const newUpload = {
             id: result.data.id,
             date: result.data.date,
-            screenTime: result.data.totalMinutes / 60, // Convert to hours
+            screenTime: result.data.totalMinutes / 60,
           };
 
           storedUser.uploads = storedUser.uploads || [];
@@ -114,12 +113,10 @@ export default function ImageUpload({
           localStorage.setItem("digitalDetoxUser", JSON.stringify(storedUser));
         }
 
-        // Call parent callback to refresh dashboard
         if (onUploadComplete && typeof onUploadComplete === "function") {
           onUploadComplete();
         }
 
-        // Reset form after 3 seconds
         setTimeout(() => {
           setSelectedFile(null);
           setPreview(null);
@@ -155,7 +152,6 @@ export default function ImageUpload({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* File Input */}
         <div className="relative">
           <input
             type="file"
@@ -202,7 +198,6 @@ export default function ImageUpload({
           </label>
         </div>
 
-        {/* Upload Button */}
         <motion.button
           whileHover={{ scale: selectedFile && !uploading ? 1.02 : 1 }}
           whileTap={{ scale: selectedFile && !uploading ? 0.98 : 1 }}
