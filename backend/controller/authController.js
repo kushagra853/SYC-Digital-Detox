@@ -156,11 +156,10 @@ export const login = async (req, res) => {
       });
     }
 
-    // Trim whitespace from admission number
-    const trimmedAdmNo = admNo.trim();
+    // Trim and convert admission number to lowercase for case-insensitive matching
+    const processedAdmNo = admNo.trim().toLowerCase();
 
-    // Find user by admission number
-    const user = await User.findOne({ admNo: trimmedAdmNo }).select(
+    const user = await User.findOne({ admNo: processedAdmNo }).select(
       "+password"
     );
 
