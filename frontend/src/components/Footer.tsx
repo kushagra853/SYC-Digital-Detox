@@ -54,7 +54,7 @@ export default function Footer() {
                 The Fitness Club of ABESEC
               </p>
               <div className="mt-4">
-                <p>Ms. Shweta Choudhary</p>
+                <p>Mrs. Shweta Choudhary</p>
                 <p className="text-xs text-gray-400 mt-1">(Club Counsellor)</p>
               </div>
             </div>
@@ -70,7 +70,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-                <span className="leading-relaxed">ABESEC, Ghaziabad</span>
+                <span className="leading-relaxed">ABES EC, Ghaziabad</span>
               </li>
 
               <li className="space-y-2">
@@ -98,7 +98,7 @@ export default function Footer() {
                 <div className="flex items-start gap-2">
                   <User className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-200">Mr. Vivek</p>
+                    <p className="font-medium text-gray-200">Mr. Vivek Singh</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 ml-6">
@@ -155,11 +155,7 @@ export default function Footer() {
               <div className="relative p-2 bg-white rounded-xl shadow-lg transform rotate-3 hover:rotate-6 transition-transform group">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 opacity-20 rounded-xl blur-sm group-hover:opacity-40 transition-opacity" />
                 <div className="relative bg-white p-2 rounded-lg flex flex-col items-center justify-center aspect-square">
-                  <img
-                    src="/InstagramQR.png"
-                    alt="Instagram QR"
-                    className="w-24 h-24"
-                  />
+                  
                 </div>
               </div>
               <div className="relative p-2 bg-white rounded-xl shadow-lg transform -rotate-3 hover:-rotate-6 transition-transform group">
