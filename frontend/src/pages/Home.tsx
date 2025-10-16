@@ -28,13 +28,13 @@ export default function Home({ user }: HomeProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen  overflow-x-hidden bg-white">
       <div className="relative overflow-hidden pt-24 pb-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-          <div className="absolute inset-0">
-            <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 left-10 animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 -left-20 animate-pulse" />
             <div
-              className="absolute w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl bottom-20 right-10 animate-pulse"
+              className="absolute w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl bottom-20 -right-20 animate-pulse"
               style={{ animationDelay: "1s" }}
             />
           </div>
