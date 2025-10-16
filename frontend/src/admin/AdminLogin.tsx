@@ -13,11 +13,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    if (
-      username === "SYC_Admin" &&
-      password ===
-        "$2b$12$Gie1a3.gq4t2tI1.dE9zpOwJg/O2p6L4JqJ4kK8s6K8kL2lI9mJ8m"
-    ) {
+    if (username === "SYC_Admin" && password === "Placid-Rocket-Jigsaw-42!") {
       setIsLoggingIn(true);
       localStorage.setItem(
         "adminSession",

@@ -328,7 +328,7 @@ export default function Home({ user }: HomeProps) {
             {
               icon: Calendar,
               title: "Duration",
-              text: "17th Oct - 26th Oct 2025",
+              text: "24th October - 2nd November 2025",
               subtext: "10 days of transformation",
               delay: 0,
             },
