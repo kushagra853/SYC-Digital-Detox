@@ -18,6 +18,7 @@ import {
   Zap,
   Target,
   Award,
+  CircleCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -173,17 +174,23 @@ export default function Home({ user }: HomeProps) {
                   <ul className="space-y-4">
                     {[
                       {
-                        icon: "😴",
+                        icon: CircleCheck,
                         text: "Improved sleep quality and duration",
                       },
-                      { icon: "🎯", text: "Enhanced focus and productivity" },
-                      { icon: "🧘", text: "Reduced anxiety and stress levels" },
                       {
-                        icon: "💬",
+                        icon: CircleCheck,
+                        text: "Enhanced focus and productivity",
+                      },
+                      {
+                        icon: CircleCheck,
+                        text: "Reduced anxiety and stress levels",
+                      },
+                      {
+                        icon: CircleCheck,
                         text: "Better interpersonal relationships",
                       },
                       {
-                        icon: "🌟",
+                        icon: CircleCheck,
                         text: "Increased mindfulness and presence",
                       },
                     ].map((item, idx) => (
