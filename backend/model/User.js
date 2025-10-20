@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone type is required"],
     },
+    whatsappInvite: { type: Boolean, default: false },
     totalScreenTime: {
       type: Number,
       default: 0,

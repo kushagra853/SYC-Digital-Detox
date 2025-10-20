@@ -81,6 +81,7 @@ export default function ImageUpload({
 
       const response = await fetch(
         "https://syc-digital-detox.onrender.com/api/uploads/extract",
+        // "http://localhost:5000/api/uploads/extract",
         {
           method: "POST",
           body: formData,

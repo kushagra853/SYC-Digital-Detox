@@ -135,28 +135,6 @@ class OCRService {
       };
     }
 
-    // Pattern for unlocks
-    const unlocksPattern = /(\d+)\s*(?:\n|\s)*Unlocks/i;
-    const unlocksMatch = text.match(unlocksPattern);
-
-    if (unlocksMatch) {
-      results.data.unlocks = parseInt(unlocksMatch[1]);
-    }
-
-    // Pattern for notifications
-    const notificationsPattern = /(\d+)\s*(?:\n|\s)*Notifications/i;
-    const notificationsMatch = text.match(notificationsPattern);
-
-    if (notificationsMatch) {
-      results.data.notifications = parseInt(notificationsMatch[1]);
-    }
-
-    // Extract app names
-    const apps = this.extractAppNames(text);
-    if (apps.length > 0) {
-      results.data.apps = apps;
-    }
-
     // If no screen time found, set error
     if (!results.success) {
       results.error =
@@ -164,40 +142,6 @@ class OCRService {
     }
 
     return results;
-  }
-
-  extractAppNames(text) {
-    const commonApps = [
-      "Instagram",
-      "YouTube",
-      "WhatsApp",
-      "Snapchat",
-      "Facebook",
-      "TikTok",
-      "Twitter",
-      "Chrome",
-      "Clock",
-      "IRCTC",
-      "Gmail",
-      "Messages",
-      "Phone",
-      "Camera",
-      "Gallery",
-      "Maps",
-      "Netflix",
-      "Spotify",
-    ];
-
-    const foundApps = [];
-    const lowerText = text.toLowerCase();
-
-    commonApps.forEach((app) => {
-      if (lowerText.includes(app.toLowerCase())) {
-        foundApps.push(app);
-      }
-    });
-
-    return [...new Set(foundApps)];
   }
 
   async cleanup() {
@@ -246,7 +190,7 @@ export async function extractScreenTime(imagePath) {
 // Export service instance for cleanup
 export { ocrService };
 
-// Graceful shutdown
+// shutdown
 process.on("SIGTERM", async () => {
   console.log("Cleaning up OCR service...");
   await ocrService.cleanup();

@@ -8,7 +8,6 @@ import User from "../model/User.js";
 
 const router = express.Router();
 
-// MULTER CONFIG
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     const uploadDir = "./uploads";
@@ -53,8 +52,8 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       });
     }
 
-    // EVENT START DATE CHECK - October 24, 2025, 9:30 PM IST
-    const eventStartDate = new Date("2025-10-24T16:00:00.000Z"); // 9:30 PM IST = 4:00 PM UTC
+    // event start date check - October 24, 2025, 9:59 PM
+    const eventStartDate = new Date("2025-10-24T16:00:00.000Z");
     const now = new Date();
 
     if (now < eventStartDate) {
@@ -64,7 +63,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       return res.status(403).json({
         success: false,
         error:
-          "Event has not started yet. The challenge begins on October 24, 2025 at 9:30 PM IST.",
+          "Event has not started yet. The uploading begins on October 24, 2025 at 9:59 PM ",
         eventStartsAt: eventStartDate.toISOString(),
       });
     }
@@ -89,9 +88,8 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       });
     }
 
-    // Submission window (10:00 PM – 11:59 PM IST)
-    // Convert current time to IST (UTC+5:30)
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+    // Submission window (10:00 PM – 11:59 PM )
+    const istOffset = 5.5 * 60 * 60 * 1000; // offset in milliseconds
     const istTime = new Date(now.getTime() + istOffset);
     const hour = istTime.getUTCHours();
     const minute = istTime.getUTCMinutes();
@@ -104,7 +102,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       });
     }
 
-    // Check if user already submitted today (in IST)
+    // Check if user already submitted today
     const todayIST = new Date(istTime);
     todayIST.setUTCHours(0, 0, 0, 0);
     const tomorrowIST = new Date(todayIST);
@@ -140,7 +138,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     const totalMinutes = extractedData.data.totalMinutes;
     const limitExceeded = totalMinutes > 120;
 
-    // SAVE UPLOAD FIRST (before any disqualification logic)
+    // saving any upload first (before any disqualification logic)
     const newUpload = new Upload({
       userId: user._id,
       imagePath: req.file.filename,
@@ -151,7 +149,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
 
     await newUpload.save();
 
-    // UPDATE USER with submission data
+    // update user with submission data
     user.screenTimeSubmissions.push({
       uploadId: newUpload._id,
       screenTime: extractedData.data.screenTime,
@@ -161,7 +159,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     user.totalScreenTime += totalMinutes;
     user.lastSubmissionDate = now;
 
-    // NOW HANDLE LIMIT EXCEED / DISQUALIFICATION LOGIC
+    // handle limit exceed / disqualification logic
     if (limitExceeded) {
       user.limitExceedCount += 1;
 
@@ -177,7 +175,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
         const previousExceeded = previousSubmission.totalMinutes > 120;
 
         if (previousExceeded) {
-          // Two consecutive days exceeded - DISQUALIFY
+          // Two consecutive days exceeded - disqualify
           user.consecutiveLimitExceeded = true;
           user.disqualified = true;
         } else {

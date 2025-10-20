@@ -7,9 +7,8 @@ export const getUserRank = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // The key is ensuring sort is { totalScreenTime: 1 } for ascending order
     const allUsers = await User.find({ disqualified: false })
-      .sort({ totalScreenTime: 1 }) // <-- CORRECT: 1 sorts lowest to highest
+      .sort({ totalScreenTime: 1 })
       .select("_id");
 
     const rank =
