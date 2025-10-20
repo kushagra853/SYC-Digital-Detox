@@ -195,7 +195,7 @@ export default function Dashboard({ user }: DashboardProps) {
           <StatusCard
             icon={<Target className="w-5 h-5 text-indigo-600" />}
             bg="bg-indigo-50"
-            label="Over 2hr Reports"
+            label="Over 3hr 30mins Reports"
             value={`${userStatus.limitExceedCount}${
               userStatus.consecutiveLimitExceeded ? " (Consecutive)" : ""
             }`}
@@ -276,16 +276,16 @@ export default function Dashboard({ user }: DashboardProps) {
                           <div className="text-right">
                             <div
                               className={`px-2.5 py-1 rounded-md text-xs font-medium ${
-                                submission.totalMinutes <= 240
+                                submission.totalMinutes <= 210
                                   ? "bg-emerald-50 text-emerald-700"
-                                  : submission.totalMinutes <= 480
+                                  : submission.totalMinutes <= 300
                                   ? "bg-amber-50 text-amber-700"
                                   : "bg-red-50 text-red-700"
                               }`}
                             >
-                              {submission.totalMinutes <= 240
+                              {submission.totalMinutes <= 210
                                 ? "Great"
-                                : submission.totalMinutes <= 480
+                                : submission.totalMinutes <= 300
                                 ? "Moderate"
                                 : "High"}
                             </div>
@@ -384,15 +384,15 @@ export default function Dashboard({ user }: DashboardProps) {
                             const mins = data.totalMinutes;
 
                             const status =
-                              mins <= 240
+                              mins <= 210
                                 ? "Great"
-                                : mins <= 480
+                                : mins <= 300
                                 ? "Moderate"
                                 : "High";
                             const statusColor =
-                              mins <= 240
+                              mins <= 210
                                 ? "text-emerald-600"
-                                : mins <= 480
+                                : mins <= 300
                                 ? "text-amber-600"
                                 : "text-red-600";
 

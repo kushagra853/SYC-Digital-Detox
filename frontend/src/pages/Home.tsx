@@ -701,7 +701,10 @@ export default function Home({ user }: HomeProps) {
                       >
                         <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0" />
                         <p className="text-gray-700">
-                          Exceeding the daily limit (2 hours of screen time){" "}
+                          Exceeding the daily limit{" "}
+                          <span className="font-semibold">
+                            (3 hours 30 minutes)
+                          </span>{" "}
                           <span className="font-semibold">
                             consecutively 2 times
                           </span>{" "}

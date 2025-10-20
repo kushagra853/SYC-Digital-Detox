@@ -136,7 +136,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     }
 
     const totalMinutes = extractedData.data.totalMinutes;
-    const limitExceeded = totalMinutes > 120;
+    const limitExceeded = totalMinutes > 210; //3 hours 30 mins
 
     // saving any upload first (before any disqualification logic)
     const newUpload = new Upload({
@@ -172,7 +172,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       // Check if previous submission (if exists) also exceeded
       if (sortedSubmissions.length >= 2) {
         const previousSubmission = sortedSubmissions[1]; // Index 0 is today's submission
-        const previousExceeded = previousSubmission.totalMinutes > 120;
+        const previousExceeded = previousSubmission.totalMinutes > 210;
 
         if (previousExceeded) {
           // Two consecutive days exceeded - disqualify
@@ -215,7 +215,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
         "You have been disqualified for exceeding the daily limit twice consecutively or 3 times in total.";
       response.disqualified = true;
     } else if (limitExceeded) {
-      response.warning = `You have exceeded the 2-hour daily limit. Exceed count: ${user.limitExceedCount}/3`;
+      response.warning = `You have exceeded the 3 hour 30 mins daily limit. Exceed count: ${user.limitExceedCount}/3`;
     }
 
     res.json(response);
