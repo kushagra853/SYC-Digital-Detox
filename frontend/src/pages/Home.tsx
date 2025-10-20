@@ -174,23 +174,18 @@ export default function Home({ user }: HomeProps) {
                   <ul className="space-y-4">
                     {[
                       {
-                        icon: CircleCheck,
                         text: "Improved sleep quality and duration",
                       },
                       {
-                        icon: CircleCheck,
                         text: "Enhanced focus and productivity",
                       },
                       {
-                        icon: CircleCheck,
                         text: "Reduced anxiety and stress levels",
                       },
                       {
-                        icon: CircleCheck,
                         text: "Better interpersonal relationships",
                       },
                       {
-                        icon: CircleCheck,
                         text: "Increased mindfulness and presence",
                       },
                     ].map((item, idx) => (
@@ -207,7 +202,7 @@ export default function Home({ user }: HomeProps) {
                           whileHover={{ scale: 1.3, rotate: 10 }}
                           className="text-2xl flex-shrink-0"
                         >
-                          {item.icon}
+                          <CircleCheck className="w-6 h-6 text-emerald-600" />
                         </motion.span>
                         <p className="text-gray-700 pt-1">{item.text}</p>
                       </motion.li>
