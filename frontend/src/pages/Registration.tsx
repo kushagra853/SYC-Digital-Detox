@@ -162,7 +162,7 @@ export default function RegistrationPage({
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-600 max-w-md"
             >
-              Join in this transformative 10-day program and win prizes along.
+              Join in this transformative 10-day Event and win prizes along.
             </motion.p>
           </div>
           <motion.div
@@ -172,7 +172,7 @@ export default function RegistrationPage({
             className="space-y-3"
           >
             {[
-              { icon: Sparkles, text: "Free 10-day program" },
+              { icon: Sparkles, text: "Free 10-day Event" },
               { icon: GraduationCap, text: "Certificate on completion" },
               { icon: User, text: "Personalized tracking" },
             ].map((item, index) => (
@@ -319,7 +319,7 @@ function RegistrationForm({
               Create an Account
             </h1>
             <p className="text-sm text-slate-500">
-              Join the Digital Detox program today
+              Join the Digital Detox today
             </p>
           </div>
 

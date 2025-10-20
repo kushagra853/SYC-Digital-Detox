@@ -17,6 +17,7 @@ import {
   Sparkles,
   Zap,
   Target,
+  Award,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +30,7 @@ export default function Home({ user }: HomeProps) {
 
   return (
     <div className="min-h-screen  overflow-x-hidden bg-white">
-      <div className="relative overflow-hidden pt-24 pb-12">
+      <div className="relative overflow-hidden pt-5 pb-12">
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute w-96 h-96 bg-green-400/20 rounded-full blur-3xl top-20 -left-20 animate-pulse" />
@@ -386,7 +387,7 @@ export default function Home({ user }: HomeProps) {
           className="mb-20"
         >
           <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900 text-center mb-4">
-            Program Objectives
+            Event Objectives
           </motion.h2>
           <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
             Transform your relationship with technology through our
@@ -458,7 +459,7 @@ export default function Home({ user }: HomeProps) {
           className="mb-20"
         >
           <motion.h2 className="text-4xl md:text-5xl font-semibold text-gray-900 text-center mb-4">
-            Program Features
+            Event Features
           </motion.h2>
           <p className="text-gray-600 text-center text-lg max-w-2xl mx-auto mb-16">
             Everything you need to succeed in your digital detox journey
@@ -475,14 +476,20 @@ export default function Home({ user }: HomeProps) {
               {
                 icon: Zap,
                 title: "Awareness Reports",
-                desc: "Receive periodic insights and progress updates throughout the program",
+                desc: "Receive periodic insights and progress updates throughout the Event",
                 delay: 0.1,
               },
               {
                 icon: Trophy,
                 title: "Certification",
-                desc: "Earn a participation certificate upon completing the program",
+                desc: "Earn a participation certificate upon completing the Event",
                 delay: 0.15,
+              },
+              {
+                icon: Award,
+                title: "Prizes for Top Performers",
+                desc: "Compete to win exciting prizes and recognition for achieving the lowest screen time",
+                delay: 0.2,
               },
             ].map((item, idx) => (
               <motion.div
