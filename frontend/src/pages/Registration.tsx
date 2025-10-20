@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
-  Mail,
   User,
-  IdCard,
   GraduationCap,
   Sparkles,
   Lock,
@@ -16,7 +13,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import api, { loginUser } from "../api";
-import { Button } from "../components/ui/button";
 import {
   Select,
   SelectContent,
@@ -25,6 +21,12 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import ScrollToTopOnMount from "../components/ScrollToTop";
+
+// Format: YYYY-MM-DDTHH:MM:SS
+const REGISTRATION_CLOSE_DATE = new Date("2025-10-30T00:00:00");
+
+const currentDate = new Date();
+const isRegistrationClosed = currentDate > REGISTRATION_CLOSE_DATE;
 
 interface RegistrationPageProps {
   onRegisterSuccess: (userData: any) => void;
@@ -35,10 +37,16 @@ interface RegistrationPageProps {
 function AuthToggle({
   isLogin,
   onToggle,
+  isRegistrationClosed,
 }: {
   isLogin: boolean;
   onToggle: () => void;
+  isRegistrationClosed: boolean;
 }) {
+  if (isRegistrationClosed) {
+    return null;
+  }
+
   return (
     <div className="flex justify-center mb-6">
       <div className="flex space-x-1 rounded-full bg-slate-100 p-1">
@@ -89,8 +97,13 @@ export default function RegistrationPage({
   onLoginSuccess,
   onBack,
 }: RegistrationPageProps) {
-  const [isLogin, setIsLogin] = useState(false);
-  const handleToggle = () => setIsLogin((prev) => !prev);
+  const [isLogin, setIsLogin] = useState(isRegistrationClosed);
+
+  const handleToggle = () => {
+    if (!isRegistrationClosed) {
+      setIsLogin((prev) => !prev);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
@@ -191,6 +204,7 @@ export default function RegistrationPage({
               onBack={onBack}
               onToggleForm={handleToggle}
               isLogin={isLogin}
+              isRegistrationClosed={isRegistrationClosed}
             />
           ) : (
             <RegistrationForm
@@ -198,6 +212,7 @@ export default function RegistrationPage({
               onBack={onBack}
               onToggleForm={handleToggle}
               isLogin={isLogin}
+              isRegistrationClosed={isRegistrationClosed}
             />
           )}
         </motion.div>
@@ -211,6 +226,7 @@ interface RegisterFormProps {
   onBack: () => void;
   onToggleForm: () => void;
   isLogin: boolean;
+  isRegistrationClosed: boolean;
 }
 
 function RegistrationForm({
@@ -218,6 +234,7 @@ function RegistrationForm({
   onBack,
   onToggleForm,
   isLogin,
+  isRegistrationClosed,
 }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -289,7 +306,11 @@ function RegistrationForm({
     <>
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-8">
-          <AuthToggle isLogin={isLogin} onToggle={onToggleForm} />
+          <AuthToggle
+            isLogin={isLogin}
+            onToggle={onToggleForm}
+            isRegistrationClosed={isRegistrationClosed}
+          />
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
               <User className="w-7 h-7 text-green-700" />
@@ -551,6 +572,7 @@ interface LoginFormProps {
   onBack: () => void;
   onToggleForm: () => void;
   isLogin: boolean;
+  isRegistrationClosed: boolean;
 }
 
 function LoginForm({
@@ -558,6 +580,7 @@ function LoginForm({
   onBack,
   onToggleForm,
   isLogin,
+  isRegistrationClosed,
 }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -595,7 +618,26 @@ function LoginForm({
     <>
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-8">
-          <AuthToggle isLogin={isLogin} onToggle={onToggleForm} />
+          <AuthToggle
+            isLogin={isLogin}
+            onToggle={onToggleForm}
+            isRegistrationClosed={isRegistrationClosed}
+          />
+
+          {isRegistrationClosed && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-2"
+            >
+              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-700">
+                Registration for the event is now closed. Please log in to
+                continue.
+              </p>
+            </motion.div>
+          )}
+
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-xl shadow-sm mb-4 border border-green-100">
               <LogIn className="w-7 h-7 text-green-700" />
