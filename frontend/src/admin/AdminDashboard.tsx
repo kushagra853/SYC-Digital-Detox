@@ -691,112 +691,121 @@ function StandingsView({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div
-                  style={{
-                    width: "100%",
-                    height: 300 + groupedBarChartData.length * 50,
-                  }}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      layout="vertical"
-                      data={groupedBarChartData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      barGap={2}
-                      barCategoryGap="15%"
-                      barSize={10}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#f1f5f9"
-                        horizontal={true}
-                        vertical={false}
-                      />
-                      <XAxis
-                        type="number"
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                        axisLine={{ stroke: "#e2e8f0" }}
-                        tickLine={{ stroke: "#e2e8f0" }}
-                      />
-                      <YAxis
-                        dataKey="name"
-                        type="category"
-                        width={120}
-                        tick={(props) => {
-                          const { x, y, payload } = props;
-                          const user = groupedBarChartData.find(
-                            (u: any) => u.name === payload.value
-                          );
-                          return (
-                            <text
-                              x={x}
-                              y={y}
-                              fill={user?.disqualified ? "#dc2626" : "#475569"}
-                              fontSize={13}
-                              fontWeight={500}
-                              textAnchor="end"
-                              dy={4}
-                            >
-                              {payload.value}
-                              {user?.disqualified && " ❌"}
-                            </text>
-                          );
-                        }}
-                        axisLine={{ stroke: "#e2e8f0" }}
-                        tickLine={false}
-                      />
-                      <Tooltip
-                        content={({ active, payload, label }) => {
-                          if (active && payload && payload.length) {
-                            const userData = groupedBarChartData.find(
-                              (u: any) => u.name === label
+                {dailyStandings.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <TrendingUp className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <p>No data available for today's standing.</p>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: 300 + groupedBarChartData.length * 50,
+                    }}
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={groupedBarChartData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        barGap={2}
+                        barCategoryGap="15%"
+                        barSize={10}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#f1f5f9"
+                          horizontal={true}
+                          vertical={false}
+                        />
+                        <XAxis
+                          type="number"
+                          tick={{ fill: "#64748b", fontSize: 12 }}
+                          axisLine={{ stroke: "#e2e8f0" }}
+                          tickLine={{ stroke: "#e2e8f0" }}
+                        />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          width={120}
+                          tick={(props) => {
+                            const { x, y, payload } = props;
+                            const user = groupedBarChartData.find(
+                              (u: any) => u.name === payload.value
                             );
                             return (
-                              <div
-                                className={`p-4 border rounded-lg shadow-lg ${
-                                  userData?.disqualified
-                                    ? "bg-red-50 border-red-200"
-                                    : "bg-white border-gray-200"
-                                }`}
+                              <text
+                                x={x}
+                                y={y}
+                                fill={
+                                  user?.disqualified ? "#dc2626" : "#475569"
+                                }
+                                fontSize={13}
+                                fontWeight={500}
+                                textAnchor="end"
+                                dy={4}
                               >
-                                <div className="flex items-center gap-2 mb-2">
-                                  <p className="font-semibold text-gray-900">
-                                    {label}
-                                  </p>
-                                  {userData?.disqualified && (
-                                    <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
-                                      <XCircle className="w-3 h-3" />
-                                      DISQUALIFIED
-                                    </span>
-                                  )}
-                                </div>
-                                {payload.map((entry: any, index: number) => (
-                                  <p
-                                    key={index}
-                                    className="text-sm text-gray-600"
-                                    style={{ color: entry.fill }}
-                                  >
-                                    {entry.name}: {entry.value} mins
-                                  </p>
-                                ))}
-                              </div>
+                                {payload.value}
+                                {user?.disqualified && " ❌"}
+                              </text>
                             );
-                          }
-                          return null;
-                        }}
-                      />
-                      {daysOfWeek.map((day: any, idx: number) => (
-                        <Bar
-                          key={day}
-                          dataKey={day}
-                          name={day}
-                          stackId="a"
-                          fill={barColors[idx % barColors.length]}
+                          }}
+                          axisLine={{ stroke: "#e2e8f0" }}
+                          tickLine={false}
                         />
-                      ))}
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                        <Tooltip
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              const userData = groupedBarChartData.find(
+                                (u: any) => u.name === label
+                              );
+                              return (
+                                <div
+                                  className={`p-4 border rounded-lg shadow-lg ${
+                                    userData?.disqualified
+                                      ? "bg-red-50 border-red-200"
+                                      : "bg-white border-gray-200"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <p className="font-semibold text-gray-900">
+                                      {label}
+                                    </p>
+                                    {userData?.disqualified && (
+                                      <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-300">
+                                        <XCircle className="w-3 h-3" />
+                                        DISQUALIFIED
+                                      </span>
+                                    )}
+                                  </div>
+                                  {payload.map((entry: any, index: number) => (
+                                    <p
+                                      key={index}
+                                      className="text-sm text-gray-600"
+                                      style={{ color: entry.fill }}
+                                    >
+                                      {entry.name}: {entry.value} mins
+                                    </p>
+                                  ))}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        {daysOfWeek.map((day: any, idx: number) => (
+                          <Bar
+                            key={day}
+                            dataKey={day}
+                            name={day}
+                            stackId="a"
+                            fill={barColors[idx % barColors.length]}
+                          />
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
