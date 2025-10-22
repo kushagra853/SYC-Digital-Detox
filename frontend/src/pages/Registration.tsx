@@ -534,6 +534,9 @@ function RegistrationForm({
                   <SelectItem value="B.Tech - 3rd Year">
                     B.Tech - 3rd Year
                   </SelectItem>
+                  <SelectItem value="B.Tech - 4th Year">
+                    B.Tech - 4th Year
+                  </SelectItem>
                   <SelectItem value="MCA - 1st Year">MCA - 1st Year</SelectItem>
                   <SelectItem value="MCA - 2nd Year">MCA - 2nd Year</SelectItem>
                   <SelectItem value="MBA - 1st Year">MBA - 1st Year</SelectItem>
