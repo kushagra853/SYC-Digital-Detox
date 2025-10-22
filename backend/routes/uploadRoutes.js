@@ -53,20 +53,20 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     }
 
     // event start date check - October 24, 2025, 9:59 PM
-    // const eventStartDate = new Date("2025-10-24T16:00:00.000Z");
+    const eventStartDate = new Date("2025-10-24T16:00:00.000Z");
     const now = new Date();
 
-    // if (now < eventStartDate) {
-    //   if (req.file?.path) {
-    //     await fs.unlink(req.file.path);
-    //   }
-    //   return res.status(403).json({
-    //     success: false,
-    //     error:
-    //       "Event has not started yet. The uploading begins on October 24, 2025 at 9:59 PM ",
-    //     eventStartsAt: eventStartDate.toISOString(),
-    //   });
-    // }
+    if (now < eventStartDate) {
+      if (req.file?.path) {
+        await fs.unlink(req.file.path);
+      }
+      return res.status(403).json({
+        success: false,
+        error:
+          "Event has not started yet. The uploading begins on October 24, 2025 at 9:59 PM ",
+        eventStartsAt: eventStartDate.toISOString(),
+      });
+    }
 
     const userId = req.body.userId;
     const user = await User.findById(userId);
