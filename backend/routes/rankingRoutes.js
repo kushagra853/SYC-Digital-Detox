@@ -7,17 +7,28 @@ export const getUserRank = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const allUsers = await User.find({ disqualified: false })
+    const allUsers = await User.find({
+      disqualified: false,
+      totalScreenTime: { $gt: 0 },
+    })
       .sort({ totalScreenTime: 1 })
-      .select("_id");
-
+      .select("_id name totalScreenTime");
     const rank =
       allUsers.findIndex((user) => user._id.toString() === userId) + 1;
 
     if (rank === 0) {
+      const user = await User.findById(userId);
+      let message = "User not found in rankings.";
+
+      if (user?.disqualified) {
+        message = "You are disqualified from the rankings.";
+      } else if (!user?.totalScreenTime || user?.totalScreenTime === 0) {
+        message = "You are not yet ranked. Submit your first screen time.";
+      }
+
       return res.status(404).json({
         success: false,
-        message: "User not found in rankings or is disqualified.",
+        message: message,
       });
     }
 
@@ -37,5 +48,6 @@ export const getUserRank = async (req, res) => {
     });
   }
 };
+
 router.get("/:userId", getUserRank);
 export default router;
