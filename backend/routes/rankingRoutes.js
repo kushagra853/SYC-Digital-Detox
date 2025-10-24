@@ -7,14 +7,17 @@ export const getUserRank = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const allUsers = await User.find({
+    const rankedUsers = await User.find({
       disqualified: false,
       totalScreenTime: { $gt: 0 },
     })
       .sort({ totalScreenTime: 1 })
-      .select("_id name totalScreenTime");
+      .select("_id");
+
+    const totalParticipantCount = await User.countDocuments();
+
     const rank =
-      allUsers.findIndex((user) => user._id.toString() === userId) + 1;
+      rankedUsers.findIndex((user) => user._id.toString() === userId) + 1;
 
     if (rank === 0) {
       const user = await User.findById(userId);
@@ -36,7 +39,7 @@ export const getUserRank = async (req, res) => {
       success: true,
       data: {
         rank,
-        totalParticipants: allUsers.length,
+        totalParticipants: totalParticipantCount,
       },
     });
   } catch (error) {
