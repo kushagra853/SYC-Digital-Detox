@@ -80,8 +80,8 @@ export default function ImageUpload({
       formData.append("date", new Date().toISOString());
 
       const response = await fetch(
-        "https://syc-digital-detox.onrender.com/api/uploads/extract",
-        // "http://localhost:5000/api/uploads/extract",
+        // "https://syc-digital-detox.onrender.com/api/uploads/extract",
+        "http://localhost:5000/api/uploads/extract",
         {
           method: "POST",
           body: formData,
