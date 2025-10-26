@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import { extractScreenTime } from "../services/ocrService.js";
+import { uploadToImgBB } from "../services/imgbbService.js";
 import Upload from "../model/Upload.js";
 import User from "../model/User.js";
 
@@ -44,6 +45,8 @@ const upload = multer({
 
 // POST /api/uploads/extract - Extract screen time and apply rules
 router.post("/extract", upload.single("image"), async (req, res) => {
+  let localFileStillExists = req.file ? true : false;
+
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -59,6 +62,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     if (now < eventStartDate) {
       if (req.file?.path) {
         await fs.unlink(req.file.path);
+        localFileStillExists = false;
       }
       return res.status(403).json({
         success: false,
@@ -73,6 +77,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
 
     if (!user) {
       await fs.unlink(req.file.path);
+      localFileStillExists = false;
       return res.status(404).json({
         success: false,
         error: "User not found",
@@ -82,6 +87,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     // Disqualified users cannot submit
     if (user.disqualified) {
       await fs.unlink(req.file.path);
+      localFileStillExists = false;
       return res.status(403).json({
         success: false,
         error: "You are disqualified and cannot submit further screenshots.",
@@ -89,13 +95,14 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     }
 
     // Submission window (10:00 PM – 11:59 PM )
-    const istOffset = 5.5 * 60 * 60 * 1000; // offset in milliseconds
+    const istOffset = 5.5 * 60 * 60 * 1000;
     const istTime = new Date(now.getTime() + istOffset);
     const hour = istTime.getUTCHours();
     const minute = istTime.getUTCMinutes();
 
-    if (hour < 22 || hour > 23 || (hour === 23 && minute > 59)) {
+    if (hour < 20 || hour > 23 || (hour === 23 && minute > 59)) {
       await fs.unlink(req.file.path);
+      localFileStillExists = false;
       return res.status(400).json({
         success: false,
         error: "Submissions are only allowed between 10:00 PM and 11:59 PM IST",
@@ -118,6 +125,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
 
     if (todaySubmission) {
       await fs.unlink(req.file.path);
+      localFileStillExists = false;
       return res.status(400).json({
         success: false,
         error: "You have already submitted your screen time for today.",
@@ -128,6 +136,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     const extractedData = await extractScreenTime(req.file.path);
     if (!extractedData.success) {
       await fs.unlink(req.file.path);
+      localFileStillExists = false;
       return res.status(400).json({
         success: false,
         error:
@@ -138,10 +147,13 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     const totalMinutes = extractedData.data.totalMinutes;
     const limitExceeded = totalMinutes > 210; //3 hours 30 mins
 
+    const imageUrl = await uploadToImgBB(req.file, user, now);
+    localFileStillExists = false;
+
     // saving any upload first (before any disqualification logic)
     const newUpload = new Upload({
       userId: user._id,
-      imagePath: req.file.filename,
+      imagePath: imageUrl,
       screenTime: extractedData.data.screenTime,
       totalMinutes,
       date: now,
@@ -164,26 +176,21 @@ router.post("/extract", upload.single("image"), async (req, res) => {
       user.limitExceedCount += 1;
 
       // Check for consecutive exceeds
-      // Get the last submission before today
       const sortedSubmissions = [...user.screenTimeSubmissions].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
 
-      // Check if previous submission (if exists) also exceeded
       if (sortedSubmissions.length >= 2) {
-        const previousSubmission = sortedSubmissions[1]; // Index 0 is today's submission
+        const previousSubmission = sortedSubmissions[1];
         const previousExceeded = previousSubmission.totalMinutes > 210;
 
         if (previousExceeded) {
-          // Two consecutive days exceeded - disqualify
           user.consecutiveLimitExceeded = true;
           user.disqualified = true;
         } else {
-          // Not consecutive, reset the flag
           user.consecutiveLimitExceeded = false;
         }
       } else {
-        // First submission that exceeded - NOT consecutive yet
         user.consecutiveLimitExceeded = false;
       }
 
@@ -192,7 +199,6 @@ router.post("/extract", upload.single("image"), async (req, res) => {
         user.disqualified = true;
       }
     } else {
-      // Within limit - reset consecutive flag
       user.consecutiveLimitExceeded = false;
     }
 
@@ -206,6 +212,7 @@ router.post("/extract", upload.single("image"), async (req, res) => {
         screenTime: extractedData.data.screenTime,
         totalMinutes,
         date: now,
+        imageUrl: imageUrl,
       },
     };
 
@@ -221,11 +228,12 @@ router.post("/extract", upload.single("image"), async (req, res) => {
     res.json(response);
   } catch (error) {
     console.error("Error processing upload:", error);
-    if (req.file?.path) {
+
+    if (localFileStillExists && req.file?.path) {
       try {
         await fs.unlink(req.file.path);
       } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError);
+        console.error("Error deleting file in catch block:", unlinkError);
       }
     }
 
@@ -299,14 +307,6 @@ router.delete("/:id", async (req, res) => {
         success: false,
         error: "Upload not found",
       });
-    }
-
-    // Delete image file
-    const imagePath = path.join("./uploads", upload.imagePath);
-    try {
-      await fs.unlink(imagePath);
-    } catch (error) {
-      console.error("Error deleting image file:", error);
     }
 
     // Delete from database
